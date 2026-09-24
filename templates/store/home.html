@@ -6,6 +6,153 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/product-rating.css' %}">
 <style>
+/* ============================================================
+   SYSTEMATIC BUTTON & PRODUCT CARD ALIGNMENT (PERFECT HORIZONTAL ORDER)
+============================================================ */
+.products .box-container {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr)) !important;
+    align-items: stretch !important;
+    gap: 2.5rem !important;
+}
+
+.products .box-container .box,
+.products .box {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    position: relative !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.products .box-container .box:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 12px 25px rgba(0,0,0,0.08) !important;
+}
+
+/* 1. Price Badge: floating on top right */
+.products .box-container .box .price {
+    position: absolute !important;
+    top: 1.2rem !important;
+    right: 1.2rem !important;
+    background: #2563eb !important;
+    color: #ffffff !important;
+    font-size: 1.35rem !important;
+    font-weight: 700 !important;
+    padding: 0.5rem 1.2rem !important;
+    border-radius: 20px !important;
+    z-index: 5 !important;
+    box-shadow: 0 2px 6px rgba(37,99,235,0.3) !important;
+}
+
+/* 2. Image container: Fixed 200px height with white canvas and perfect centering */
+.products .box-container .box > a:first-of-type,
+.products .box-container .box .image-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 200px !important;
+    min-height: 200px !important;
+    max-height: 200px !important;
+    background: #ffffff !important;
+    padding: 1.5rem !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.products .box-container .box > a:first-of-type img,
+.products .box-container .box img.image {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    display: block !important;
+    margin: auto !important;
+    transition: transform 0.3s ease !important;
+}
+
+.products .box-container .box:hover img.image {
+    transform: scale(1.05) !important;
+}
+
+/* 3. Box Body: flex column with flex-grow: 1 */
+.products .box-container .box .box-body {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-grow: 1 !important;
+    padding: 1.5rem 1.8rem 1.8rem 1.8rem !important;
+    text-align: center !important;
+}
+
+/* 4. Product Name: exactly 4.4rem (2-line clamped) so every single card has identical height */
+.products .box-container .box .name {
+    font-size: 1.65rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    height: 4.4rem !important;
+    min-height: 4.4rem !important;
+    max-height: 4.4rem !important;
+    line-height: 2.2rem !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin: 0 0 0.8rem 0 !important;
+    text-decoration: none !important;
+}
+
+/* 5. Rating Stars: exactly 2.4rem so rating row occupies identical vertical space */
+.products .box-container .box .stars {
+    height: 2.4rem !important;
+    min-height: 2.4rem !important;
+    max-height: 2.4rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    font-size: 1.35rem !important;
+    color: #f59e0b !important;
+    margin: 0 0 1.2rem 0 !important;
+}
+
+/* 6. Action Button: PINNED TO THE BOTTOM OF THE CARD IN PERFECT SYSTEMATIC ORDER */
+.products .box-container .box .btn,
+.products .box-container .box a.btn,
+.products .box-container .box input[type="submit"].btn,
+.products .box-container .box input[type="button"].btn,
+.products .box-container .box button.btn {
+    margin-top: auto !important;
+    width: 100% !important;
+    height: 4.6rem !important;
+    min-height: 4.6rem !important;
+    max-height: 4.6rem !important;
+    padding: 0 1.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.45rem !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+    border: none !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
+    transition: all 0.2s ease !important;
+}
+
 .home-bg {
     background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url("{% static 'images/home-bg.jpg' %}") no-repeat;
     background-size: cover;
@@ -296,22 +443,17 @@
     <div class="box-container">
         {% for product in collaborative_recs %}
         <div class="box">
+            <div class="price">Rs {{ product.price }}/-</div>
             <a href="{% url 'store:product_detail' product.id %}">
                 <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
             </a>
-            <div class="name">{{ product.name }}</div>
-            <div class="stars" style="color:#f59e0b; font-size:1.4rem; margin:0.5rem 0;">
-                <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
+            <div class="box-body">
+                <div class="name">{{ product.name }}</div>
+                <div class="stars">
+                    <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
+                </div>
+                <a href="{% url 'store:product_detail' product.id %}" class="btn" style="background:var(--primary); color:#fff;">View Footwear</a>
             </div>
-            <div class="price">Rs {{ product.price }}/-</div>
-            
-            {% if product.is_in_stock %}
-                <div style="color:#16a34a; font-size:1.35rem; font-weight:600; margin-bottom:1.2rem;">In Stock ({{ product.quantity }})</div>
-            {% else %}
-                <div style="color:#dc2626; font-size:1.35rem; font-weight:600; margin-bottom:1.2rem;">Out of Stock</div>
-            {% endif %}
-            
-            <a href="{% url 'store:product_detail' product.id %}" class="btn" style="background:var(--primary);">View Footwear</a>
         </div>
         {% endfor %}
     </div>
@@ -331,31 +473,29 @@
         {% for product in latest_products %}
         <form action="" method="post" class="box">
             {% csrf_token %}
+            <div class="price">Rs {{ product.price }}/-</div>
             <a href="{% url 'store:product_detail' product.id %}">
                 <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
             </a>
-            <div class="name">{{ product.name }}</div>
-            
-            <div class="stars" style="color:#f59e0b; font-size:1.4rem; margin:0.5rem 0;">
-                <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
+            <div class="box-body">
+                <div class="name">{{ product.name }}</div>
+                <div class="stars">
+                    <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
+                </div>
+                <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:1.2rem;">
+                    <label style="font-size:1.35rem; color:#64748b;">Qty:</label>
+                    <input type="number" min="1" max="{{ product.quantity|default:1 }}" name="product_quantity" value="1" class="qty" style="width:55px; padding:0.4rem; text-align:center; font-size:1.4rem; border:1px solid #cbd5e1; border-radius:6px;">
+                </div>
+                <input type="hidden" name="product_name" value="{{ product.name }}">
+                <input type="hidden" name="product_price" value="{{ product.price }}">
+                <input type="hidden" name="product_image" value="{{ product.image }}">
+                
+                {% if product.is_in_stock %}
+                    <input type="submit" value="Add to Cart" name="add_to_cart" class="btn" style="background:#10b981; color:#fff;">
+                {% else %}
+                    <input type="button" value="Out of Stock" class="btn" style="background:#94a3b8; cursor:not-allowed; color:#fff;" disabled>
+                {% endif %}
             </div>
-            
-            <div class="price">Rs {{ product.price }}/-</div>
-            
-            <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin: 1rem 0;">
-                <label style="font-size:1.35rem; color:#64748b;">Qty:</label>
-                <input type="number" min="1" max="{{ product.quantity|default:1 }}" name="product_quantity" value="1" class="qty" style="width:55px; padding:0.5rem; text-align:center; font-size:1.4rem; border:1px solid #cbd5e1; border-radius:6px;">
-            </div>
-
-            <input type="hidden" name="product_name" value="{{ product.name }}">
-            <input type="hidden" name="product_price" value="{{ product.price }}">
-            <input type="hidden" name="product_image" value="{{ product.image }}">
-            
-            {% if product.is_in_stock %}
-                <input type="submit" value="Add to Cart" name="add_to_cart" class="btn" style="background:#10b981;">
-            {% else %}
-                <input type="button" value="Out of Stock" class="btn" style="background:#94a3b8; cursor:not-allowed;" disabled>
-            {% endif %}
         </form>
         {% empty %}
         <p class="empty" style="grid-column:1/-1;">No footwear available right now!</p>
@@ -394,12 +534,17 @@
     <div class="box-container">
         {% for product in purchase_recs %}
         <div class="box">
+            <div class="price">Rs {{ product.price }}/-</div>
             <a href="{% url 'store:product_detail' product.id %}">
                 <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
             </a>
-            <div class="name">{{ product.name }}</div>
-            <div class="price">Rs {{ product.price }}/-</div>
-            <a href="{% url 'store:product_detail' product.id %}" class="btn" style="background:#6366f1;">Inspect Shoe Details</a>
+            <div class="box-body">
+                <div class="name">{{ product.name }}</div>
+                <div class="stars">
+                    <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
+                </div>
+                <a href="{% url 'store:product_detail' product.id %}" class="btn" style="background:#6366f1; color:#fff;">Inspect Shoe Details</a>
+            </div>
         </div>
         {% endfor %}
     </div>
@@ -419,15 +564,17 @@
     <div class="box-container">
         {% for product in most_reviewed_products %}
         <div class="box">
+            <div class="price">Rs {{ product.price }}/-</div>
             <a href="{% url 'store:product_detail' product.id %}">
                 <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
             </a>
-            <div class="name">{{ product.name }}</div>
-            <div class="stars" style="color:#f59e0b; font-size:1.4rem; margin:0.5rem 0;">
-                <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }} reviews)
+            <div class="box-body">
+                <div class="name">{{ product.name }}</div>
+                <div class="stars">
+                    <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }} reviews)
+                </div>
+                <a href="{% url 'store:product_detail' product.id %}" class="btn" style="background:var(--primary); color:#fff;">View Shoe</a>
             </div>
-            <div class="price">Rs {{ product.price }}/-</div>
-            <a href="{% url 'store:product_detail' product.id %}" class="btn">View Shoe</a>
         </div>
         {% endfor %}
     </div>

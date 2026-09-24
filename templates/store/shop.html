@@ -143,42 +143,43 @@
         {% for product in products %}
         <form action="" method="post" class="box">
             {% csrf_token %}
+            <div class="price">Rs {{ product.price }}/-</div>
             <a href="{% url 'store:product_detail' product.id %}">
                 <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
             </a>
             
-            <div class="name">{{ product.name }}</div>
+            <div class="box-body">
+                <div class="name">{{ product.name }}</div>
 
-            <div class="stars" style="color:#f59e0b; font-size:1.4rem; margin:0.4rem 0;">
-                <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
-            </div>
-
-            <div class="price">Rs {{ product.price }}/-</div>
-
-            <!-- Tags for Brand and Type -->
-            <div style="margin: 0.6rem 0; font-size: 1.3rem;">
-                {% if product.brand %}
-                    <a href="{% url 'store:shop' %}?brand={{ product.brand }}" style="color: #0284c7; margin-right: 0.6rem;">#{{ product.brand }}</a>
-                {% endif %}
-                {% if product.type %}
-                    <a href="{% url 'store:shop' %}?type={{ product.type }}" style="color: #7c3aed;">#{{ product.type }}</a>
-                {% endif %}
-            </div>
-
-            {% if product.is_in_stock %}
-                <div style="color:#16a34a; font-size:1.3rem; font-weight:600; margin-bottom:1rem;">In Stock ({{ product.quantity }})</div>
-                <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:1rem;">
-                    <label style="font-size:1.35rem; color:#64748b;">Qty:</label>
-                    <input type="number" min="1" max="{{ product.quantity }}" name="product_quantity" value="1" class="qty" style="width:55px; padding:0.5rem; text-align:center; font-size:1.4rem; border:1px solid #cbd5e1; border-radius:6px;">
+                <div class="stars">
+                    <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
                 </div>
-                <input type="hidden" name="product_name" value="{{ product.name }}">
-                <input type="hidden" name="product_price" value="{{ product.price }}">
-                <input type="hidden" name="product_image" value="{{ product.image }}">
-                <input type="submit" value="Add to Cart" name="add_to_cart" class="btn" style="background:#10b981;">
-            {% else %}
-                <div style="color:#dc2626; font-size:1.3rem; font-weight:600; margin-bottom:1rem;">Out of Stock</div>
-                <input type="button" value="Out of Stock" class="btn" style="background:#94a3b8; cursor:not-allowed;" disabled>
-            {% endif %}
+
+                <!-- Tags for Brand and Type -->
+                <div style="margin: 0 0 1rem 0; font-size: 1.3rem;">
+                    {% if product.brand %}
+                        <a href="{% url 'store:shop' %}?brand={{ product.brand }}" style="color: #0284c7; margin-right: 0.6rem;">#{{ product.brand }}</a>
+                    {% endif %}
+                    {% if product.type %}
+                        <a href="{% url 'store:shop' %}?type={{ product.type }}" style="color: #7c3aed;">#{{ product.type }}</a>
+                    {% endif %}
+                </div>
+
+                {% if product.is_in_stock %}
+                    <div style="color:#16a34a; font-size:1.3rem; font-weight:600; margin-bottom:1rem;">In Stock ({{ product.quantity }})</div>
+                    <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:1.2rem;">
+                        <label style="font-size:1.35rem; color:#64748b;">Qty:</label>
+                        <input type="number" min="1" max="{{ product.quantity }}" name="product_quantity" value="1" class="qty" style="width:55px; padding:0.4rem; text-align:center; font-size:1.4rem; border:1px solid #cbd5e1; border-radius:6px;">
+                    </div>
+                    <input type="hidden" name="product_name" value="{{ product.name }}">
+                    <input type="hidden" name="product_price" value="{{ product.price }}">
+                    <input type="hidden" name="product_image" value="{{ product.image }}">
+                    <input type="submit" value="Add to Cart" name="add_to_cart" class="btn" style="background:#10b981; color:#fff;">
+                {% else %}
+                    <div style="color:#dc2626; font-size:1.3rem; font-weight:600; margin-bottom:1rem;">Out of Stock</div>
+                    <input type="button" value="Out of Stock" class="btn" style="background:#94a3b8; cursor:not-allowed; color:#fff;" disabled>
+                {% endif %}
+            </div>
         </form>
         {% empty %}
         <div style="grid-column: 1/-1; text-align:center;">

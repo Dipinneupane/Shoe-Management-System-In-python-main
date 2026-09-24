@@ -13,8 +13,9 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         if not self.name and (self.first_name or self.last_name):
             self.name = f"{self.first_name} {self.last_name}".strip()
-        if self.user_type == 'admin':
+        if self.user_type == 'admin' or self.is_superuser or self.is_staff:
             self.is_staff = True
+            self.user_type = 'admin'
         super().save(*args, **kwargs)
 
     def __str__(self):

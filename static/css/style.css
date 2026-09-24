@@ -9,6 +9,9 @@
    --success: #38b000;
    --warning: #ffbe0b;
    --danger: #e63946;
+   --orange: #f59e0b;
+   --purple: #3a86ff;
+   --red: #e63946;
    --black: #212529;
    --dark-gray: #343a40;
    --gray: #6c757d;
@@ -1250,85 +1253,135 @@ section{
    max-width: 1200px;
    margin: 0 auto;
    display: grid;
-   grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
+   grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
    align-items: stretch;
-   gap: 3rem;
+   gap: 2.5rem;
    justify-content: center;
 }
 
 .products .box-container .box {
    border-radius: var(--border-radius);
    background-color: var(--white);
-   box-shadow: var(--box-shadow);
+   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
    padding: 0;
    text-align: center;
    border: var(--border);
    position: relative;
-   transition: all 0.3s ease;
+   transition: transform 0.25s ease, box-shadow 0.25s ease;
    overflow: hidden;
-   display: flex;
-   flex-direction: column;
+   display: flex !important;
+   flex-direction: column !important;
+   justify-content: flex-start !important;
+   height: 100% !important;
 }
 
 .products .box-container .box:hover {
-   transform: translateY(-10px);
-   box-shadow: var(--hover-shadow);
+   transform: translateY(-6px);
+   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
+/* Image frame: Fixed height & perfect centering */
+.products .box-container .box > a:first-of-type,
+.products .box-container .box .image-wrapper,
 .products .box-container .box .image-container {
-   position: relative;
-   overflow: hidden;
-   height: 30rem;
+   display: flex !important;
+   align-items: center !important;
+   justify-content: center !important;
+   width: 100% !important;
+   height: 200px !important;
+   min-height: 200px !important;
+   max-height: 200px !important;
+   background: #ffffff !important;
+   padding: 1.5rem !important;
+   margin: 0 !important;
+   overflow: hidden !important;
+   border-bottom: 1px solid #f1f5f9;
+   position: relative !important;
 }
 
-.products .box-container .box .image {
-   height: 100%;
-   width: 100%;
-   object-fit: cover;
-   transition: transform 0.5s ease;
+.products .box-container .box > a:first-of-type img,
+.products .box-container .box img.image,
+.products .box-container .box .image,
+.products .box-container .box .image-container img {
+   max-width: 100% !important;
+   max-height: 100% !important;
+   width: auto !important;
+   height: auto !important;
+   object-fit: contain !important;
+   aspect-ratio: 1 / 1 !important;
+   display: block !important;
+   margin: 0 auto !important;
+   transition: transform 0.3s ease;
 }
 
-.products .box-container .box:hover .image {
+.products .box-container .box:hover img {
    transform: scale(1.05);
 }
 
+/* Card Body container to flex-grow and systematically push button to bottom */
+.products .box-container .box .box-body,
 .products .box-container .box .content {
-   padding: 2rem;
-   display: flex;
-   flex-direction: column;
-   flex-grow: 1;
-   justify-content: space-between;
+   display: flex !important;
+   flex-direction: column !important;
+   flex-grow: 1 !important;
+   padding: 1.5rem 1.8rem 1.8rem 1.8rem !important;
+   text-align: center !important;
 }
 
-.products .box-container .box .name{
-   font-size: 2rem;
-   color:var(--black);
-   text-decoration: none;
-   display: block;
-   margin-bottom: 1rem;
-   transition: color 0.3s ease;
+/* Standardized 2-line title height for perfect row alignment */
+.products .box-container .box .name {
+   font-size: 1.65rem !important;
+   font-weight: 600 !important;
+   color: #1e293b !important;
+   line-height: 1.35 !important;
+   min-height: 4.4rem !important;
+   max-height: 4.4rem !important;
+   display: -webkit-box !important;
+   -webkit-line-clamp: 2 !important;
+   -webkit-box-orient: vertical !important;
+   overflow: hidden !important;
+   text-overflow: ellipsis !important;
+   margin: 0 0 0.8rem 0 !important;
+   text-decoration: none !important;
 }
 
-.products .box-container .box .name:hover{
-   color: var(--red);
-}
-
+/* Fixed-height rating row so empty/full ratings occupy identical vertical space */
+.products .box-container .box .stars,
 .products .box-container .box .product-rating {
-   display: flex;
-   align-items: center;
-   margin-bottom: 1rem;
+   min-height: 2.2rem !important;
+   display: flex !important;
+   align-items: center !important;
+   justify-content: center !important;
+   gap: 4px !important;
+   font-size: 1.35rem !important;
+   color: #f59e0b !important;
+   margin: 0 0 1.2rem 0 !important;
 }
 
-.products .box-container .box .product-rating i {
-   color: #FFD700; /* Gold color for stars */
-   font-size: 1.4rem;
-   margin-right: 0.2rem;
-}
-
-.products .box-container .box .product-rating .rating-count {
-   margin-left: 0.5rem;
-   font-size: 1.3rem;
-   color: var(--light-color);
+/* SYSTEMATIC BOTTOM-PINNED BUTTON: Always sits at the exact same bottom line */
+.products .box-container .box .btn,
+.products .box-container .box a.btn,
+.products .box-container .box input[type="submit"].btn,
+.products .box-container .box input[type="button"].btn,
+.products .box-container .box form .btn,
+.products .box-container .box button.btn {
+   margin-top: auto !important;
+   width: 100% !important;
+   padding: 1.1rem 1.5rem !important;
+   font-size: 1.45rem !important;
+   font-weight: 600 !important;
+   border-radius: 8px !important;
+   text-align: center !important;
+   display: flex !important;
+   align-items: center !important;
+   justify-content: center !important;
+   gap: 6px !important;
+   cursor: pointer !important;
+   box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
+   transition: all 0.2s ease !important;
+   border: none !important;
+   box-sizing: border-box !important;
+   text-decoration: none !important;
 }
 
 .products .box-container .box .available-sizes {
@@ -1471,17 +1524,39 @@ section{
 @media (max-width: 992px) { .rating .stars { font-size: 1.4rem; } }
 @media (max-width: 576px) { .rating .stars { font-size: 1.3rem; } }
 
-/* Ensure anchor and image create a proper stacking context for overlays */
-.products .box-container .box .image-container a { display: block; }
+/* Ensure anchor and image create a proper stacking context and equal shape/size */
+.products .box-container .box a,
+.products .box a { 
+    display: block; 
+    width: 100%; 
+    overflow: hidden; 
+    border-radius: 8px; 
+    background: #f8fafc; 
+    margin-bottom: 1.2rem; 
+}
 
+.products .box-container .box img,
+.products .box-container .box .image,
 .products .box-container .box .image-container img,
 .products .box-container .box .image-container .image,
+.products .box img,
+.products .box .image,
 .image-container img,
 .image-container .image {
     display: block;
     width: 100%;
     height: 220px;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
+    border-radius: 8px;
+    background: #f8fafc;
+    transition: transform 0.35s ease;
+}
+
+.products .box-container .box:hover img,
+.products .box-container .box:hover .image,
+.products .box:hover img {
+    transform: scale(1.04);
 }
 
 .products .box-container .box .out-of-stock {

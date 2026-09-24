@@ -5,12 +5,13 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 
 User = get_user_model()
 
 def login_view(request):
     if request.user.is_authenticated:
-        if request.user.user_type == 'admin':
+        if request.user.user_type == 'admin' or request.user.is_staff or request.user.is_superuser:
             return redirect('store_admin:dashboard')
         return redirect('store:home')
 
@@ -18,19 +19,18 @@ def login_view(request):
         messages.error(request, 'Your account has been deleted by an administrator.')
 
     if request.method == 'POST':
-        email = request.POST.get('email', '').strip().lower()
+        login_input = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
 
         # Try to find user by email or username
-        user_obj = User.query if hasattr(User, 'query') else None
-        user_record = User.objects.filter(email__iexact=email).first()
-        username_to_auth = user_record.username if user_record else email
+        user_record = User.objects.filter(Q(email__iexact=login_input) | Q(username__iexact=login_input)).first()
+        username_to_auth = user_record.username if user_record else login_input
 
         user = authenticate(request, username=username_to_auth, password=password)
         if user is not None:
             login(request, user)
             messages.success(request, f'Welcome back, {user.name or user.username}!')
-            if user.user_type == 'admin':
+            if user.user_type == 'admin' or user.is_staff or user.is_superuser:
                 return redirect('store_admin:dashboard')
             return redirect('store:home')
         else:

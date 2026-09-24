@@ -11,7 +11,7 @@ User = get_user_model()
 
 print("Setting up initial users...")
 
-# Create Admin User
+# Create or update Admin User
 admin_user = User.objects.filter(email='admin@gmail.com').first()
 if not admin_user:
     admin_user = User.objects.create_user(
@@ -25,7 +25,12 @@ if not admin_user:
     )
     print("Created Admin: admin@gmail.com / admin123")
 else:
-    print("Admin already exists.")
+    admin_user.user_type = 'admin'
+    admin_user.is_staff = True
+    admin_user.is_superuser = True
+    admin_user.set_password('admin123')
+    admin_user.save()
+    print("Admin updated: admin@gmail.com / admin123 (user_type=admin, is_staff=True, is_superuser=True)")
 
 # Create Customer User
 customer_user = User.objects.filter(email='customer@gmail.com').first()

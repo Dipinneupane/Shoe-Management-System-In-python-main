@@ -8,7 +8,7 @@ def admin_required(view_func):
         if not request.user.is_authenticated:
             messages.error(request, 'Please login to access the admin area.')
             return redirect('accounts:login')
-        if request.user.user_type != 'admin' and not request.user.is_staff:
+        if request.user.user_type != 'admin' and not request.user.is_staff and not request.user.is_superuser:
             messages.error(request, 'Access denied. Administrator privileges required.')
             return redirect('store:home')
         return view_func(request, *args, **kwargs)

@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 urlpatterns = [
     # Built-in Django Admin (bonus)
@@ -9,6 +10,7 @@ urlpatterns = [
     
     # Custom Admin Portal matching the original PHP admin
     path('admin-panel/', include('apps.store_admin.urls', namespace='store_admin')),
+    path('admin/', RedirectView.as_view(url='/admin-panel/', permanent=False)),
     
     # Authentication & Accounts
     path('accounts/', include('apps.accounts.urls', namespace='accounts')),
