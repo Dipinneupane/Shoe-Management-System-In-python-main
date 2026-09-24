@@ -1,0 +1,61 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Manage Users - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+.users .box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.users .box {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+}
+.users .box p {
+    font-size: 1.5rem;
+    color: var(--light-color);
+    margin-bottom: 0.8rem;
+}
+.users .box p span {
+    color: var(--black);
+    font-weight: 500;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="users">
+    <h1 class="title">User Accounts Directory</h1>
+
+    <div class="box-container">
+        {% for u in users_list %}
+        <div class="box">
+            <p> User ID : <span>#{{ u.id }}</span> </p>
+            <p> Name : <span>{{ u.name|default:u.username }}</span> </p>
+            <p> Email : <span>{{ u.email }}</span> </p>
+            <p> User Type : 
+                <span style="font-weight:bold; {% if u.user_type == 'admin' %}color:var(--orange);{% else %}color:var(--primary);{% endif %}">
+                    {{ u.user_type|upper }}
+                </span> 
+            </p>
+            
+            <a href="{% url 'store_admin:users' %}?delete={{ u.id }}" onclick="return confirm('Are you sure you want to delete this user account? All their reviews will also be removed.');" class="delete-btn" style="width:100%; text-align:center; display:block; margin-top:1.5rem;">
+                Delete User
+            </a>
+        </div>
+        {% empty %}
+        <p class="empty">No registered users found!</p>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

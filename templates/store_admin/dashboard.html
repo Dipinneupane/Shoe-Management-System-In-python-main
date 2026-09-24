@@ -1,0 +1,242 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Modern Admin Dashboard */
+.admin-top-bar {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+}
+.kpi-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2.2rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+.kpi-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+.kpi-info h3 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+.kpi-info p {
+    font-size: 1.35rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.metric-box {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2.2rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    text-align: center;
+    transition: transform 0.2s;
+}
+.metric-box:hover {
+    transform: translateY(-3px);
+}
+.metric-box h3 {
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 0.5rem;
+}
+.metric-box p {
+    font-size: 1.45rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section style="padding: 2rem 2rem 5rem;">
+
+    <!-- 1. Top Bar with Date & Quick Action Buttons -->
+    <div class="admin-top-bar">
+        <div>
+            <h1 style="font-size:2.4rem; font-weight:700; color:var(--black); margin-bottom:0.4rem;">
+                Administrator Dashboard
+            </h1>
+            <p style="font-size:1.45rem; color:#64748b;">
+                <i class="fas fa-calendar-day"></i> {{ today_date }} | Kathmandu Store Center
+            </p>
+        </div>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <a href="{% url 'store_admin:products' %}" class="btn" style="padding:1rem 2rem; font-size:1.45rem; margin:0;">
+                <i class="fas fa-plus"></i> Add New Shoe
+            </a>
+            <a href="{% url 'store:home' %}" target="_blank" class="option-btn" style="padding:1rem 2rem; font-size:1.45rem; margin:0; background:#3b82f6;">
+                <i class="fas fa-arrow-up-right-from-square"></i> Open Storefront
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. Primary Financial KPIs Row -->
+    <div class="kpi-grid">
+        <!-- Total Revenue -->
+        <div class="kpi-card" style="border-left: 5px solid #10b981;">
+            <div class="kpi-icon" style="background:#ecfdf5; color:#10b981;">
+                <i class="fas fa-sack-dollar"></i>
+            </div>
+            <div class="kpi-info">
+                <h3 style="color:#047857;">Rs {{ total_revenue }}</h3>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+
+        <!-- Pending Payments -->
+        <div class="kpi-card" style="border-left: 5px solid #f59e0b;">
+            <div class="kpi-icon" style="background:#fffbeb; color:#f59e0b;">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="kpi-info">
+                <h3 style="color:#b45309;">Rs {{ total_pendings }}</h3>
+                <p>Pending Receivables</p>
+            </div>
+        </div>
+
+        <!-- Completed Payments -->
+        <div class="kpi-card" style="border-left: 5px solid #3b82f6;">
+            <div class="kpi-icon" style="background:#eff6ff; color:#3b82f6;">
+                <i class="fas fa-circle-check"></i>
+            </div>
+            <div class="kpi-info">
+                <h3 style="color:#1d4ed8;">Rs {{ total_completed }}</h3>
+                <p>Completed Sales</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Operations & Store Metrics -->
+    <h2 style="max-width:1200px; margin:0 auto 1.5rem; font-size:1.9rem; color:var(--black); font-weight:700;">
+        Store Operations & Catalog Health
+    </h2>
+
+    <div class="metrics-grid">
+        <!-- Stock Out Alert Card -->
+        <div class="metric-box" {% if out_of_stock_count > 0 %}style="border-color:#fca5a5; background:#fff1f2;"{% endif %}>
+            <h3 {% if out_of_stock_count > 0 %}style="color:#dc2626;"{% endif %}>{{ out_of_stock_count }}</h3>
+            <p>Out of Stock Alert</p>
+            <a href="{% url 'store_admin:products' %}?filter=out_of_stock" class="btn" style="background:{% if out_of_stock_count > 0 %}#dc2626{% else %}#64748b{% endif %}; font-size:1.35rem; padding:0.8rem 1.6rem;">
+                Manage Inventory
+            </a>
+        </div>
+
+        <!-- Pending Reviews -->
+        <div class="metric-box">
+            <h3>{{ pending_reviews_count }}</h3>
+            <p>Pending Product Reviews</p>
+            <a href="{% url 'store_admin:reviews' %}" class="btn" style="font-size:1.35rem; padding:0.8rem 1.6rem;">
+                Review Moderation
+            </a>
+        </div>
+
+        <!-- Orders -->
+        <div class="metric-box">
+            <h3>{{ number_of_orders }}</h3>
+            <p>Total Customer Orders</p>
+            <a href="{% url 'store_admin:orders' %}" class="btn" style="font-size:1.35rem; padding:0.8rem 1.6rem;">
+                Fulfill Orders
+            </a>
+        </div>
+
+        <!-- Products -->
+        <div class="metric-box">
+            <h3>{{ number_of_products }}</h3>
+            <p>Footwear in Catalog</p>
+            <a href="{% url 'store_admin:products' %}" class="btn" style="font-size:1.35rem; padding:0.8rem 1.6rem;">
+                Catalog List
+            </a>
+        </div>
+
+        <!-- Customers -->
+        <div class="metric-box">
+            <h3>{{ number_of_users }}</h3>
+            <p>Registered Customers</p>
+            <a href="{% url 'store_admin:users' %}" class="btn" style="font-size:1.35rem; padding:0.8rem 1.6rem;">
+                Customer Directory
+            </a>
+        </div>
+
+        <!-- Admin Accounts -->
+        <div class="metric-box">
+            <h3>{{ number_of_admins }}</h3>
+            <p>Administrator Accounts</p>
+            <a href="{% url 'store_admin:users' %}" class="btn" style="font-size:1.35rem; padding:0.8rem 1.6rem;">
+                Admin Roles
+            </a>
+        </div>
+
+        <!-- Total Accounts -->
+        <div class="metric-box">
+            <h3>{{ total_accounts }}</h3>
+            <p>Total User Accounts</p>
+            <a href="{% url 'store_admin:users' %}" class="btn" style="font-size:1.35rem; padding:0.8rem 1.6rem;">
+                All Accounts
+            </a>
+        </div>
+
+        <!-- Messages -->
+        <div class="metric-box">
+            <h3>{{ number_of_messages }}</h3>
+            <p>Customer Inquiries</p>
+            <a href="{% url 'store_admin:contacts' %}" class="btn" style="font-size:1.35rem; padding:0.8rem 1.6rem;">
+                Inbox Messages
+            </a>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

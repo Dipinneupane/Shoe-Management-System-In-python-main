@@ -1,0 +1,614 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Happy Fit – Nepal's Premier Footwear Store{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+    {% block extra_css %}{% endblock %}
+
+    <style>
+    /* =============================================
+       KINGSHEAD-STYLE HEADER
+    ============================================= */
+    .site-header {
+        position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: #fff;
+        border-bottom: 1px solid #ebebeb;
+        transition: box-shadow 0.3s;
+    }
+    .site-header.scrolled {
+        box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+    .hdr-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 72px;
+    }
+
+    /* Logo — bold brand + tiny sub */
+    .hdr-logo {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+    .hdr-logo-name {
+        font-size: 2.2rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        color: #111;
+        text-transform: uppercase;
+    }
+    .hdr-logo-name span { color: var(--primary, #3a86ff); }
+    .hdr-logo-sub {
+        font-size: 1rem;
+        font-weight: 400;
+        color: #999;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+
+    /* Nav links — plain, clean, spread out */
+    .hdr-nav {
+        display: flex;
+        align-items: center;
+        gap: 3.5rem;
+    }
+    .hdr-nav a {
+        font-size: 1.35rem;
+        font-weight: 400;
+        color: #555;
+        letter-spacing: 0.3px;
+        text-decoration: none;
+        transition: color 0.2s;
+        white-space: nowrap;
+    }
+    .hdr-nav a:hover,
+    .hdr-nav a.hdr-active {
+        color: #111;
+    }
+    .hdr-nav a.hdr-active {
+        font-weight: 600;
+    }
+
+    /* Right side — minimal icons only */
+    .hdr-right {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-shrink: 0;
+    }
+    .hdr-icon {
+        position: relative;
+        color: #555;
+        font-size: 1.6rem;
+        text-decoration: none;
+        transition: color 0.2s;
+        display: flex;
+        align-items: center;
+    }
+    .hdr-icon:hover { color: #111; }
+    .hdr-cart-count {
+        position: absolute;
+        top: -6px;
+        right: -8px;
+        background: #111;
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 700;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    /* User dropdown — minimal */
+    .hdr-user-wrap {
+        position: relative;
+        cursor: pointer;
+    }
+    .hdr-user-drop {
+        position: absolute;
+        top: calc(100% + 1.4rem);
+        right: 0;
+        width: 220px;
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        border-radius: 4px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.09);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-6px);
+        transition: all 0.18s ease;
+        z-index: 2000;
+        overflow: hidden;
+    }
+    .hdr-user-drop.open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    .hdr-drop-head {
+        padding: 1.4rem 1.6rem;
+        border-bottom: 1px solid #f0f0f0;
+        background: #fafafa;
+    }
+    .hdr-drop-head strong {
+        display: block;
+        font-size: 1.35rem;
+        color: #111;
+        font-weight: 600;
+    }
+    .hdr-drop-head small {
+        font-size: 1.2rem;
+        color: #999;
+    }
+    .hdr-drop-links a {
+        display: block;
+        padding: 1rem 1.6rem;
+        font-size: 1.35rem;
+        color: #444;
+        border-bottom: 1px solid #f5f5f5;
+        transition: background 0.15s;
+    }
+    .hdr-drop-links a:hover { background: #f8f8f8; color: #111; }
+    .hdr-drop-logout {
+        display: block;
+        padding: 1rem 1.6rem;
+        font-size: 1.35rem;
+        color: #e53935;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .hdr-drop-logout:hover { background: #fff5f5; }
+    .hdr-drop-guest {
+        padding: 1.6rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    .hdr-drop-guest p {
+        font-size: 1.3rem;
+        color: #888;
+        margin-bottom: 0.4rem;
+    }
+    .hdr-drop-guest a {
+        display: block;
+        padding: 0.9rem;
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+        border-radius: 3px;
+        transition: all 0.15s;
+    }
+    .hdr-drop-guest .g-login {
+        background: #111;
+        color: #fff;
+    }
+    .hdr-drop-guest .g-login:hover { background: #333; }
+    .hdr-drop-guest .g-reg {
+        border: 1px solid #ddd;
+        color: #444;
+    }
+    .hdr-drop-guest .g-reg:hover { background: #f5f5f5; }
+
+    /* Mobile hamburger */
+    .hdr-hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+    }
+    .hdr-hamburger span {
+        display: block;
+        width: 22px;
+        height: 1.5px;
+        background: #333;
+        transition: all 0.3s;
+    }
+    .hdr-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hdr-hamburger.open span:nth-child(2) { opacity: 0; }
+    .hdr-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    @media (max-width: 960px) {
+        .hdr-nav { display: none; }
+        .hdr-hamburger { display: flex; }
+        .hdr-nav.open {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
+            position: absolute;
+            top: 100%;
+            left: 0; right: 0;
+            background: #fff;
+            border-top: 1px solid #ebebeb;
+            border-bottom: 1px solid #ebebeb;
+            padding: 1rem 3rem 1.5rem;
+        }
+        .hdr-nav.open a {
+            padding: 0.9rem 0;
+            border-bottom: 1px solid #f5f5f5;
+            width: 100%;
+        }
+        .hdr-inner { padding: 0 2rem; }
+    }
+
+    /* =============================================
+       VSCO-STYLE FOOTER
+    ============================================= */
+    .site-footer {
+        background: #0a0a0a;
+        color: #fff;
+        padding: 7rem 0 0;
+        font-family: inherit;
+    }
+    .ftr-body {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 3rem 6rem;
+        display: grid;
+        grid-template-columns: 1fr 2.5fr;
+        gap: 6rem;
+        align-items: start;
+    }
+
+    /* Big statement on left */
+    .ftr-statement {
+        font-size: 4.2rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+    }
+    .ftr-statement em {
+        display: block;
+        font-style: normal;
+        color: var(--primary, #3a86ff);
+    }
+
+    /* 4-column link grid */
+    .ftr-cols {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 3rem;
+    }
+    .ftr-col h5 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #fff;
+        margin-bottom: 2rem;
+    }
+    .ftr-col ul {
+        list-style: none;
+        padding: 0; margin: 0;
+    }
+    .ftr-col ul li {
+        margin-bottom: 1.2rem;
+    }
+    .ftr-col ul li a {
+        font-size: 1.35rem;
+        color: #888;
+        text-decoration: none;
+        transition: color 0.18s;
+        font-weight: 400;
+    }
+    .ftr-col ul li a:hover { color: #fff; }
+
+    /* Bottom strip */
+    .ftr-bottom {
+        border-top: 1px solid #1e1e1e;
+        padding: 2.5rem 3rem;
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    .ftr-bottom-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+    }
+    .ftr-bottom-logo:hover { color: var(--primary, #3a86ff); }
+    .ftr-bottom-links {
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+        flex-wrap: wrap;
+    }
+    .ftr-bottom-links a {
+        font-size: 1.25rem;
+        color: #555;
+        text-decoration: none;
+        transition: color 0.18s;
+    }
+    .ftr-bottom-links a:hover { color: #aaa; }
+    .ftr-copy {
+        font-size: 1.25rem;
+        color: #555;
+    }
+
+    /* Full-width bottom bar background */
+    .ftr-bottom-wrap {
+        background: #0a0a0a;
+        border-top: 1px solid #1a1a1a;
+        margin-top: 0;
+    }
+
+    @media (max-width: 1024px) {
+        .ftr-body { grid-template-columns: 1fr; gap: 4rem; }
+        .ftr-statement { font-size: 3rem; }
+    }
+    @media (max-width: 640px) {
+        .ftr-cols { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+        .ftr-body { padding: 0 2rem 4rem; }
+        .ftr-bottom { padding: 2rem; flex-direction: column; align-items: flex-start; gap: 1rem; }
+        .hdr-inner { height: 62px; }
+    }
+
+    /* Scroll-to-top */
+    .scroll-top {
+        position: fixed;
+        bottom: 2.5rem;
+        right: 2.5rem;
+        width: 40px;
+        height: 40px;
+        background: #111;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
+        z-index: 999;
+        border: none;
+    }
+    .scroll-top.active { opacity: 1; visibility: visible; }
+    .scroll-top:hover { background: var(--primary, #3a86ff); transform: translateY(-3px); }
+
+    /* Notifications */
+    .notification-container {
+        position: fixed;
+        top: 1.5rem;
+        right: 1.5rem;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    /* Hide legacy elements */
+    #menu-btn, #user-btn, .user-box, .account-box,
+    .header, .header-topbar, .header-main { display: none !important; }
+    </style>
+</head>
+<body>
+
+    {% if messages %}
+        <div class="notification-container">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    <span>{{ message }}</span>
+                    <i class="fas fa-times" onclick="this.parentElement.remove();"></i>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- ========== HEADER ========== -->
+    <header class="site-header" id="siteHeader">
+        <div class="hdr-inner">
+
+            <!-- Logo -->
+            <a href="{% url 'store:home' %}" class="hdr-logo">
+                <span class="hdr-logo-name">Happy<span>Fit</span></span>
+                <span class="hdr-logo-sub">Footwear Nepal</span>
+            </a>
+
+            <!-- Nav -->
+            <nav class="hdr-nav" id="hdrNav">
+                <a href="{% url 'store:home' %}" class="{% if request.resolver_match.url_name == 'home' %}hdr-active{% endif %}">Home</a>
+                <a href="{% url 'store:shop' %}" class="{% if request.resolver_match.url_name == 'shop' %}hdr-active{% endif %}">Shop</a>
+                <a href="{% url 'store:shop' %}?type=Sneakers">Sneakers</a>
+                <a href="{% url 'store:shop' %}?type=Sports">Sports</a>
+                <a href="{% url 'store:about' %}" class="{% if request.resolver_match.url_name == 'about' %}hdr-active{% endif %}">About</a>
+                <a href="{% url 'store:contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}hdr-active{% endif %}">Contact</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'orders:history' %}" class="{% if request.resolver_match.url_name == 'history' %}hdr-active{% endif %}">Orders</a>
+                {% endif %}
+            </nav>
+
+            <!-- Right icons -->
+            <div class="hdr-right">
+                <a href="{% url 'store:search' %}" class="hdr-icon" title="Search">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="{% url 'cart:cart' %}" class="hdr-icon" title="Cart">
+                    <i class="fas fa-shopping-bag"></i>
+                    {% if cart_count %}<span class="hdr-cart-count">{{ cart_count }}</span>{% endif %}
+                </a>
+                <div class="hdr-user-wrap hdr-icon" id="hdrUserWrap" title="Account">
+                    <i class="fas fa-user"></i>
+                    <div class="hdr-user-drop" id="hdrUserDrop">
+                        {% if user.is_authenticated %}
+                            <div class="hdr-drop-head">
+                                <strong>{{ user.name|default:user.username }}</strong>
+                                <small>{{ user.email }}</small>
+                            </div>
+                            <div class="hdr-drop-links">
+                                <a href="{% url 'orders:history' %}">My Orders</a>
+                                <a href="{% url 'cart:cart' %}">My Cart</a>
+                                {% if user.user_type == 'admin' or user.is_staff %}
+                                <a href="{% url 'store_admin:dashboard' %}">Admin Panel</a>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'accounts:logout' %}" class="hdr-drop-logout">Sign Out</a>
+                        {% else %}
+                            <div class="hdr-drop-guest">
+                                <p>You're not signed in</p>
+                                <a href="{% url 'accounts:login' %}" class="g-login">Sign In</a>
+                                <a href="{% url 'accounts:register' %}" class="g-reg">Create Account</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <button class="hdr-hamburger" id="hdrHamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- ========== END HEADER ========== -->
+
+    <main>{% block content %}{% endblock %}</main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="site-footer">
+        <div class="ftr-body">
+
+            <!-- Left: Big Statement -->
+            <div class="ftr-statement">
+                Step Into<br>
+                Comfort<br>
+                <em>&amp; Style.</em>
+            </div>
+
+            <!-- Right: 4 Columns -->
+            <div class="ftr-cols">
+                <div class="ftr-col">
+                    <h5>Company</h5>
+                    <ul>
+                        <li><a href="{% url 'store:home' %}">Home</a></li>
+                        <li><a href="{% url 'store:about' %}">About Us</a></li>
+                        <li><a href="{% url 'store:contact' %}">Contact</a></li>
+                        <li><a href="{% url 'store:shop' %}">All Products</a></li>
+                    </ul>
+                </div>
+                <div class="ftr-col">
+                    <h5>Collections</h5>
+                    <ul>
+                        <li><a href="{% url 'store:shop' %}?type=Sneakers">Sneakers</a></li>
+                        <li><a href="{% url 'store:shop' %}?type=Sports">Sports</a></li>
+                        <li><a href="{% url 'store:shop' %}?type=Formal">Formal</a></li>
+                        <li><a href="{% url 'store:shop' %}?type=Casual">Casual</a></li>
+                        <li><a href="{% url 'store:shop' %}?type=Boots">Boots</a></li>
+                        <li><a href="{% url 'store:shop' %}?type=Sandals">Sandals</a></li>
+                    </ul>
+                </div>
+                <div class="ftr-col">
+                    <h5>Support</h5>
+                    <ul>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'orders:history' %}">My Orders</a></li>
+                        <li><a href="{% url 'cart:cart' %}">My Cart</a></li>
+                        {% else %}
+                        <li><a href="{% url 'accounts:login' %}">Sign In</a></li>
+                        <li><a href="{% url 'accounts:register' %}">Register</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'store:contact' %}">Help Center</a></li>
+                    </ul>
+                </div>
+                <div class="ftr-col">
+                    <h5>Store</h5>
+                    <ul>
+                        <li><a href="#">Kathmandu, Nepal</a></li>
+                        <li><a href="#">+977 9863517314</a></li>
+                        <li><a href="#">Mon–Sat 9AM–7PM</a></li>
+                        <li><a href="#">Khalti &amp; COD</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Strip -->
+        <div class="ftr-bottom-wrap">
+            <div class="ftr-bottom">
+                <a href="{% url 'store:home' %}" class="ftr-bottom-logo">Happy Fit</a>
+                <div class="ftr-bottom-links">
+                    <a href="{% url 'store:about' %}">About</a>
+                    <a href="{% url 'store:contact' %}">Contact</a>
+                    <a href="{% url 'store:shop' %}">Shop</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:logout' %}">Sign Out</a>
+                    {% endif %}
+                </div>
+                <p class="ftr-copy">&copy; {% now "Y" %} Happy Fit. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- ========== END FOOTER ========== -->
+
+    <button class="scroll-top" id="scrollTopBtn" title="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+
+    <script>
+    // Header scroll shadow
+    const hdr = document.getElementById('siteHeader');
+    window.addEventListener('scroll', () => {
+        hdr && hdr.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // User dropdown
+    const userWrap = document.getElementById('hdrUserWrap');
+    const userDrop = document.getElementById('hdrUserDrop');
+    userWrap && userWrap.addEventListener('click', e => {
+        e.stopPropagation();
+        userDrop.classList.toggle('open');
+    });
+    document.addEventListener('click', () => userDrop && userDrop.classList.remove('open'));
+
+    // Hamburger
+    const ham = document.getElementById('hdrHamburger');
+    const nav = document.getElementById('hdrNav');
+    ham && ham.addEventListener('click', () => {
+        nav.classList.toggle('open');
+        ham.classList.toggle('open');
+    });
+
+    // Scroll-to-top
+    const scBtn = document.getElementById('scrollTopBtn');
+    window.addEventListener('scroll', () => scBtn && scBtn.classList.toggle('active', window.scrollY > 400));
+    scBtn && scBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    </script>
+</body>
+</html>

@@ -1,0 +1,490 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Happy Fit Premium Footwear{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product-rating.css' %}">
+<style>
+.home-bg {
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url("{% static 'images/home-bg.jpg' %}") no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.hero-content {
+    max-width: 65rem;
+    padding: 3rem 2rem;
+    color: #fff;
+}
+.hero-content h3 {
+    font-size: 4.8rem;
+    color: #fff;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+.hero-content p {
+    font-size: 1.7rem;
+    color: #f1f5f9;
+    padding-bottom: 2.5rem;
+    line-height: 1.8;
+}
+/* Trust Features Bar */
+.trust-features {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+.trust-features .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    align-items: center;
+}
+.trust-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+.trust-card i {
+    font-size: 3rem;
+    color: var(--primary);
+    background: #eff6ff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.trust-card h4 {
+    font-size: 1.55rem;
+    color: var(--black);
+    margin-bottom: 0.3rem;
+}
+.trust-card p {
+    font-size: 1.3rem;
+    color: #64748b;
+}
+
+/* Category Navigation Pills */
+.category-pills-section {
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+}
+.category-pills {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+}
+.category-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 2rem;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 30px;
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: #334155;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+.category-pill:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(58, 134, 255, 0.25);
+}
+
+/* Product Card Styling */
+.products .box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+}
+.products .box {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.products .box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+.products .box .image {
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1.2rem;
+    transition: transform 0.3s ease;
+}
+.products .box:hover .image {
+    transform: scale(1.03);
+}
+.products .box .name {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--black);
+    margin: 0.5rem 0;
+}
+.products .box .price {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+/* Testimonials */
+.testimonials-slider {
+    position: relative;
+    max-width: 800px;
+    margin: 2rem auto;
+    overflow: hidden;
+    padding: 3rem 2.5rem;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    text-align: center;
+}
+.testimonial-slide {
+    display: none;
+    transition: opacity 0.4s ease;
+}
+.testimonial-slide.active {
+    display: block;
+}
+.testimonial-slide img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1.5rem;
+    border: 3px solid var(--primary);
+}
+.testimonial-slide p {
+    font-size: 1.65rem;
+    color: #475569;
+    font-style: italic;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+.testimonial-slide .stars {
+    color: #f59e0b;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+.testimonial-slide h4 {
+    font-size: 1.8rem;
+    color: var(--black);
+}
+.slider-dots {
+    margin-top: 1.8rem;
+}
+.slider-dot {
+    height: 10px;
+    width: 10px;
+    margin: 0 5px;
+    background-color: #cbd5e1;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.slider-dot.active {
+    background-color: var(--primary);
+    width: 24px;
+    border-radius: 5px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- 1. Hero Banner Section -->
+<section class="home-bg">
+    <div class="hero-content">
+        <h3>Step into Comfort & Style</h3>
+        <p>Explore handcrafted athletic, formal, and street footwear engineered for maximum arch support, durability, and daily ease.</p>
+        <div style="display:flex; gap:1.2rem; flex-wrap:wrap;">
+            <a href="{% url 'store:shop' %}" class="btn" style="background:var(--primary); font-size:1.6rem; padding:1.2rem 2.5rem;">
+                <i class="fas fa-shopping-bag"></i> Shop Collection
+            </a>
+            <a href="{% url 'store:about' %}" class="white-btn" style="background:#ffffff; color:#1e293b; font-size:1.6rem; padding:1.2rem 2.5rem; font-weight:600;">
+                Learn More
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- 2. Trust Features Bar -->
+<div class="trust-features">
+    <div class="container">
+        <div class="trust-card">
+            <i class="fas fa-truck-fast"></i>
+            <div>
+                <h4>Fast Nepal Delivery</h4>
+                <p>Prompt door-to-door delivery</p>
+            </div>
+        </div>
+        <div class="trust-card">
+            <i class="fas fa-shield-alt"></i>
+            <div>
+                <h4>100% Genuine Shoes</h4>
+                <p>Authentic branded craftsmanship</p>
+            </div>
+        </div>
+        <div class="trust-card">
+            <i class="fas fa-wallet"></i>
+            <div>
+                <h4>Khalti & Cash on Delivery</h4>
+                <p>Flexible and secure payments</p>
+            </div>
+        </div>
+        <div class="trust-card">
+            <i class="fas fa-sync-alt"></i>
+            <div>
+                <h4>Size Fit Guarantee</h4>
+                <p>Hassle-free size assistance</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Quick Category Navigation Bar -->
+<section class="category-pills-section">
+    <h2 style="font-size:2.2rem; color:var(--black); font-weight:600;">Browse by Footwear Type</h2>
+    <div class="category-pills">
+        <a href="{% url 'store:shop' %}?type=Sneakers" class="category-pill"><i class="fas fa-shoe-prints"></i> Sneakers</a>
+        <a href="{% url 'store:shop' %}?type=Sports" class="category-pill"><i class="fas fa-running"></i> Sports / Running</a>
+        <a href="{% url 'store:shop' %}?type=Formal" class="category-pill"><i class="fas fa-user-tie"></i> Formal / Oxford</a>
+        <a href="{% url 'store:shop' %}?type=Casual" class="category-pill"><i class="fas fa-walking"></i> Casual</a>
+        <a href="{% url 'store:shop' %}?type=Boots" class="category-pill"><i class="fas fa-hiking"></i> Boots</a>
+        <a href="{% url 'store:shop' %}?type=Sandals" class="category-pill"><i class="fas fa-sun"></i> Sandals</a>
+        <a href="{% url 'store:shop' %}" class="category-pill" style="background:#f1f5f9;"><i class="fas fa-th-large"></i> All Shoes</a>
+    </div>
+</section>
+
+<!-- 4. Collaborative AI Recommendations ("Curated For You") -->
+{% if collaborative_recs %}
+<section class="products">
+    <div style="text-align:center; margin-bottom:2.5rem;">
+        <span style="background:#eff6ff; color:var(--primary); padding:0.5rem 1.4rem; border-radius:20px; font-size:1.3rem; font-weight:bold; text-transform:uppercase;">
+            <i class="fas fa-magic"></i> Personalized Picks
+        </span>
+        <h1 class="title" style="margin-top:1rem;">Recommended For You</h1>
+    </div>
+    
+    <div class="box-container">
+        {% for product in collaborative_recs %}
+        <div class="box">
+            <a href="{% url 'store:product_detail' product.id %}">
+                <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
+            </a>
+            <div class="name">{{ product.name }}</div>
+            <div class="stars" style="color:#f59e0b; font-size:1.4rem; margin:0.5rem 0;">
+                <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
+            </div>
+            <div class="price">Rs {{ product.price }}/-</div>
+            
+            {% if product.is_in_stock %}
+                <div style="color:#16a34a; font-size:1.35rem; font-weight:600; margin-bottom:1.2rem;">In Stock ({{ product.quantity }})</div>
+            {% else %}
+                <div style="color:#dc2626; font-size:1.35rem; font-weight:600; margin-bottom:1.2rem;">Out of Stock</div>
+            {% endif %}
+            
+            <a href="{% url 'store:product_detail' product.id %}" class="btn" style="background:var(--primary);">View Footwear</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- 5. Latest Arrivals & Core Catalog -->
+<section class="products" style="background:#f8fafc; padding: 5rem 2rem;">
+    <div style="text-align:center; margin-bottom:2.5rem;">
+        <span style="background:#dcfce7; color:#166534; padding:0.5rem 1.4rem; border-radius:20px; font-size:1.3rem; font-weight:bold; text-transform:uppercase;">
+            <i class="fas fa-fire"></i> Fresh In Stock
+        </span>
+        <h1 class="title" style="margin-top:1rem;">Trending & Latest Footwear</h1>
+    </div>
+
+    <div class="box-container">
+        {% for product in latest_products %}
+        <form action="" method="post" class="box">
+            {% csrf_token %}
+            <a href="{% url 'store:product_detail' product.id %}">
+                <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
+            </a>
+            <div class="name">{{ product.name }}</div>
+            
+            <div class="stars" style="color:#f59e0b; font-size:1.4rem; margin:0.5rem 0;">
+                <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
+            </div>
+            
+            <div class="price">Rs {{ product.price }}/-</div>
+            
+            <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin: 1rem 0;">
+                <label style="font-size:1.35rem; color:#64748b;">Qty:</label>
+                <input type="number" min="1" max="{{ product.quantity|default:1 }}" name="product_quantity" value="1" class="qty" style="width:55px; padding:0.5rem; text-align:center; font-size:1.4rem; border:1px solid #cbd5e1; border-radius:6px;">
+            </div>
+
+            <input type="hidden" name="product_name" value="{{ product.name }}">
+            <input type="hidden" name="product_price" value="{{ product.price }}">
+            <input type="hidden" name="product_image" value="{{ product.image }}">
+            
+            {% if product.is_in_stock %}
+                <input type="submit" value="Add to Cart" name="add_to_cart" class="btn" style="background:#10b981;">
+            {% else %}
+                <input type="button" value="Out of Stock" class="btn" style="background:#94a3b8; cursor:not-allowed;" disabled>
+            {% endif %}
+        </form>
+        {% empty %}
+        <p class="empty" style="grid-column:1/-1;">No footwear available right now!</p>
+        {% endfor %}
+    </div>
+
+    <div style="text-align: center; margin-top: 3.5rem;">
+        <a href="{% url 'store:shop' %}" class="option-btn" style="padding:1.2rem 3rem; font-size:1.6rem;">
+            Explore Complete Catalog <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+</section>
+
+<!-- 6. Footwear Size Advisor Prompt -->
+{% if recommended_size %}
+<section style="padding: 3rem 2rem; background: #e0f2fe; text-align: center; border-top: 1px solid #bae6fd; border-bottom: 1px solid #bae6fd;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <p style="font-size: 1.8rem; color: #0369a1; font-weight: 600;">
+            <i class="fas fa-ruler-combined"></i> Based on your profile measurements, your recommended shoe size is: 
+            <span style="background:#0284c7; color:#fff; padding:0.4rem 1.2rem; border-radius:6px; margin-left:0.5rem;">EU {{ recommended_size }}</span>
+        </p>
+    </div>
+</section>
+{% endif %}
+
+<!-- 7. Recommendations from Past Purchases -->
+{% if purchase_recs %}
+<section class="products">
+    <div style="text-align:center; margin-bottom:2.5rem;">
+        <span style="background:#fef3c7; color:#92400e; padding:0.5rem 1.4rem; border-radius:20px; font-size:1.3rem; font-weight:bold; text-transform:uppercase;">
+            <i class="fas fa-history"></i> Based on Your Orders
+        </span>
+        <h1 class="title" style="margin-top:1rem;">Shoes You Might Love Next</h1>
+    </div>
+
+    <div class="box-container">
+        {% for product in purchase_recs %}
+        <div class="box">
+            <a href="{% url 'store:product_detail' product.id %}">
+                <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
+            </a>
+            <div class="name">{{ product.name }}</div>
+            <div class="price">Rs {{ product.price }}/-</div>
+            <a href="{% url 'store:product_detail' product.id %}" class="btn" style="background:#6366f1;">Inspect Shoe Details</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- 8. Most Reviewed Footwear -->
+{% if most_reviewed_products %}
+<section class="products" style="background:#f8fafc; padding: 5rem 2rem;">
+    <div style="text-align:center; margin-bottom:2.5rem;">
+        <span style="background:#f3e8ff; color:#6b21a8; padding:0.5rem 1.4rem; border-radius:20px; font-size:1.3rem; font-weight:bold; text-transform:uppercase;">
+            <i class="fas fa-award"></i> Most Popular
+        </span>
+        <h1 class="title" style="margin-top:1rem;">Top Rated Classics</h1>
+    </div>
+
+    <div class="box-container">
+        {% for product in most_reviewed_products %}
+        <div class="box">
+            <a href="{% url 'store:product_detail' product.id %}">
+                <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
+            </a>
+            <div class="name">{{ product.name }}</div>
+            <div class="stars" style="color:#f59e0b; font-size:1.4rem; margin:0.5rem 0;">
+                <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }} reviews)
+            </div>
+            <div class="price">Rs {{ product.price }}/-</div>
+            <a href="{% url 'store:product_detail' product.id %}" class="btn">View Shoe</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- 9. Customer Testimonials Slider -->
+{% if testimonials %}
+<section style="padding: 5rem 2rem;">
+    <h1 class="title">Customer Stories & Reviews</h1>
+    <div class="testimonials-slider" id="testimonialSlider">
+        {% for t in testimonials %}
+        <div class="testimonial-slide {% if forloop.first %}active{% endif %}">
+            <img src="{{ MEDIA_URL }}{{ t.product.image }}" alt="{{ t.product.name }}">
+            <p>"{{ t.review_text|default:'Super comfortable shoe, highly recommended!' }}"</p>
+            <div class="stars">
+                {% for _ in "x"|rjust:t.rating %}★{% endfor %}
+            </div>
+            <h4>{{ t.user.name|default:t.user.username }}</h4>
+            <span style="color:#64748b; font-size:1.3rem;">Verified Purchase for {{ t.product.name }}</span>
+        </div>
+        {% endfor %}
+        <div class="slider-dots">
+            {% for t in testimonials %}
+            <span class="slider-dot {% if forloop.first %}active{% endif %}" onclick="goToSlide({{ forloop.counter0 }})"></span>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll('.testimonial-slide');
+const dots = document.querySelectorAll('.slider-dot');
+
+function showSlide(index) {
+    if (!slides.length) return;
+    slides.forEach(s => s.classList.remove('active'));
+    dots.forEach(d => d.classList.remove('active'));
+
+    currentSlide = (index + slides.length) % slides.length;
+    slides[currentSlide].classList.add('active');
+    if (dots[currentSlide]) dots[currentSlide].classList.add('active');
+}
+
+function goToSlide(index) {
+    showSlide(index);
+}
+
+if (slides.length > 1) {
+    setInterval(() => {
+        showSlide(currentSlide + 1);
+    }, 5500);
+}
+</script>
+{% endblock %}

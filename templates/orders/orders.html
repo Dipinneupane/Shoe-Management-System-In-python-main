@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Order History - Happy Fit{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Modern Order History Layout */
+.order-history-container {
+    max-width: 1200px;
+    margin: 3rem auto 5rem;
+    padding: 0 2rem;
+}
+.order-filter-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 1rem;
+    overflow-x: auto;
+}
+.order-tab-btn {
+    padding: 0.8rem 1.6rem;
+    border-radius: 20px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #475569;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+.order-tab-btn.active, .order-tab-btn:hover {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 2.5rem;
+}
+.order-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.order-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+.order-card-header {
+    background: #f8fafc;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.order-card-body {
+    padding: 2rem;
+    flex: 1;
+}
+.order-card-footer {
+    background: #ffffff;
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.status-badge {
+    padding: 0.4rem 1.2rem;
+    border-radius: 20px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.status-completed {
+    background: #dcfce7;
+    color: #15803d;
+}
+.status-pending {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+/* Modal Receipt Styles */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background: #ffffff;
+    padding: 3rem;
+    border-radius: 12px;
+    max-width: 650px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+    <h3>My Orders</h3>
+    <p><a href="{% url 'store:home' %}">Home</a> / Orders</p>
+</div>
+
+<div class="order-history-container">
+
+    <!-- Filter Tabs -->
+    <div class="order-filter-tabs">
+        <button class="order-tab-btn active" onclick="filterOrderCards('all', this)">All Orders ({{ orders.count }})</button>
+        <button class="order-tab-btn" onclick="filterOrderCards('pending', this)">Pending Fulfillment</button>
+        <button class="order-tab-btn" onclick="filterOrderCards('completed', this)">Completed Orders</button>
+    </div>
+
+    <!-- Orders Grid -->
+    <div class="orders-grid">
+        {% for order in orders %}
+        <div class="order-card" data-status="{{ order.payment_status|lower }}">
+            <!-- Header -->
+            <div class="order-card-header">
+                <div>
+                    <span style="font-size:1.6rem; font-weight:700; color:var(--black);">Order #{{ order.id }}</span>
+                    <span style="font-size:1.3rem; color:#64748b; margin-left:0.8rem;">{{ order.placed_on }}</span>
+                </div>
+                <span class="status-badge {% if order.payment_status == 'completed' %}status-completed{% else %}status-pending{% endif %}">
+                    {{ order.payment_status }}
+                </span>
+            </div>
+
+            <!-- Body -->
+            <div class="order-card-body">
+                <div style="font-size:1.45rem; color:#475569; margin-bottom:1.5rem; line-height:1.6;">
+                    <div><strong>Customer:</strong> {{ order.name }}</div>
+                    <div><strong>Phone:</strong> {{ order.number }}</div>
+                    <div><strong>Payment Method:</strong> {{ order.method|upper }}</div>
+                </div>
+
+                <div style="border-top:1px dashed #e2e8f0; padding-top:1.2rem;">
+                    <p style="font-size:1.4rem; font-weight:600; color:var(--black); margin-bottom:0.8rem;">Purchased Shoes:</p>
+                    {% for item in order.parsed_items %}
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.8rem;">
+                        {% if item.image %}
+                            <img src="{{ MEDIA_URL }}{{ item.image }}" alt="{{ item.name }}" style="width:48px; height:48px; object-fit:cover; border-radius:6px; border:1px solid #e2e8f0;">
+                        {% endif %}
+                        <div style="flex:1;">
+                            <div style="font-size:1.45rem; font-weight:600; color:var(--black);">
+                                {{ item.name }} (x{{ item.quantity }})
+                            </div>
+                            {% if item.size %}
+                                <div style="font-size:1.25rem; color:#0284c7; font-weight:500;">Size: {{ item.size }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="order-card-footer">
+                <div>
+                    <span style="font-size:1.3rem; color:#64748b;">Total Amount:</span>
+                    <div style="font-size:1.9rem; font-weight:700; color:var(--primary);">Rs {{ order.total_price }}/-</div>
+                </div>
+                <button class="option-btn" onclick="openOrderModal({{ order.id }})" style="margin:0; padding:0.8rem 1.6rem; font-size:1.35rem;">
+                    <i class="fas fa-file-invoice"></i> View Receipt
+                </button>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1/-1; text-align:center;">
+            <p class="empty">You have not placed any orders yet.</p>
+            <div style="margin-top:2rem;">
+                <a href="{% url 'store:shop' %}" class="btn">Start Shopping Now</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- Order Receipt Modal -->
+<div class="modal-overlay" id="orderModal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid #e2e8f0;">
+            <h3 id="modalOrderTitle" style="font-size:2.2rem; color:var(--black);">Order Receipt</h3>
+            <i class="fas fa-times" onclick="closeOrderModal()" style="font-size:2.2rem; cursor:pointer; color:#64748b;"></i>
+        </div>
+        <div id="modalOrderBody" style="font-size:1.5rem; line-height:1.7;">
+            Loading details...
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterOrderCards(status, btn) {
+    document.querySelectorAll('.order-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cards = document.querySelectorAll('.order-card');
+    cards.forEach(card => {
+        const cardStatus = card.getAttribute('data-status');
+        if (status === 'all' || cardStatus === status) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function openOrderModal(orderId) {
+    const modal = document.getElementById('orderModal');
+    const body = document.getElementById('modalOrderBody');
+    const title = document.getElementById('modalOrderTitle');
+    modal.style.display = 'flex';
+    body.innerHTML = '<p style="text-align:center; padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Retrieving order details...</p>';
+
+    fetch(`/orders/api/details/${orderId}/`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const o = data.order;
+                title.innerHTML = `<i class="fas fa-receipt" style="color:var(--primary);"></i> Order #${o.id} Receipt`;
+                let itemsHtml = '';
+                o.items.forEach(it => {
+                    itemsHtml += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem 0; border-bottom:1px solid #f1f5f9;">
+                            <div>
+                                <strong style="font-size:1.5rem;">${it.name}</strong> 
+                                ${it.size ? `<span style="background:#e0f2fe; color:#0369a1; padding:0.2rem 0.6rem; border-radius:4px; font-size:1.2rem; margin-left:0.5rem;">Size: ${it.size}</span>` : ''} 
+                                <div style="font-size:1.35rem; color:#64748b;">Qty: ${it.quantity} @ Rs ${it.price}/-</div>
+                            </div>
+                            <div style="font-weight:600; font-size:1.5rem;">Rs ${it.subtotal}/-</div>
+                        </div>
+                    `;
+                });
+
+                body.innerHTML = `
+                    <div style="background:#f8fafc; padding:1.5rem; border-radius:8px; margin-bottom:1.5rem;">
+                        <p><strong>Customer:</strong> ${o.name} (${o.email})</p>
+                        <p><strong>Phone:</strong> ${o.number}</p>
+                        <p><strong>Date Placed:</strong> ${o.placed_on}</p>
+                        <p><strong>Payment Method:</strong> ${o.method}</p>
+                        <p><strong>Status:</strong> <span style="font-weight:bold; color:${o.payment_status.toLowerCase() === 'completed' ? '#15803d' : '#b45309'};">${o.payment_status}</span></p>
+                    </div>
+                    <div style="margin: 1.5rem 0;">
+                        <h4 style="font-size:1.65rem; color:var(--black); margin-bottom:0.8rem;">Item Breakdown:</h4>
+                        ${itemsHtml}
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:2rem; font-weight:700; color:var(--black); border-top:2px solid #e2e8f0; padding-top:1.2rem; margin-top:1.5rem;">
+                        <span>Total Paid</span>
+                        <span style="color:var(--primary);">Rs ${o.total_price}/-</span>
+                    </div>
+                `;
+            } else {
+                body.innerHTML = '<p style="color:red; text-align:center;">Failed to load order data.</p>';
+            }
+        })
+        .catch(err => {
+            body.innerHTML = '<p style="color:red; text-align:center;">Error: ' + err + '</p>';
+        });
+}
+
+function closeOrderModal() {
+    document.getElementById('orderModal').style.display = 'none';
+}
+window.onclick = function(e) {
+    const modal = document.getElementById('orderModal');
+    if (e.target === modal) closeOrderModal();
+};
+</script>
+{% endblock %}

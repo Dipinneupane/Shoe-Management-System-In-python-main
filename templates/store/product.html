@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Happy Fit Footwear{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product.css' %}">
+<link rel="stylesheet" href="{% static 'css/product-rating.css' %}">
+<style>
+/* Modern 2-Column Product Showcase */
+.product-showcase {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 4rem;
+    align-items: start;
+}
+.product-gallery-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    text-align: center;
+}
+.product-gallery-card img {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+.product-gallery-card:hover img {
+    transform: scale(1.02);
+}
+.product-details-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 3rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+.size-chips {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+}
+.size-chip input[type="radio"] {
+    display: none;
+}
+.size-chip label {
+    display: inline-block;
+    padding: 0.9rem 1.8rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: #334155;
+    transition: all 0.2s ease;
+}
+.size-chip input[type="radio"]:checked + label {
+    border-color: var(--primary);
+    background-color: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(58, 134, 255, 0.3);
+}
+.size-chip label:hover {
+    border-color: var(--primary);
+}
+.perks-list {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+.perk-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.35rem;
+    color: #475569;
+}
+.perk-item i {
+    color: var(--primary);
+    font-size: 1.8rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb Header -->
+<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+    <h3>{{ product.name }}</h3>
+    <p>
+        <a href="{% url 'store:home' %}">Home</a> / 
+        <a href="{% url 'store:shop' %}">Shop</a> 
+        {% if product.brand %}/ <a href="{% url 'store:shop' %}?brand={{ product.brand }}">{{ product.brand }}</a>{% endif %}
+        / {{ product.name }}
+    </p>
+</div>
+
+<!-- 1. Main 2-Column Showcase -->
+<div class="product-showcase">
+    <!-- Left: Gallery Showcase -->
+    <div class="product-gallery-card">
+        <img src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
+    </div>
+
+    <!-- Right: Product Options & Purchase -->
+    <div class="product-details-card">
+        <!-- Brand & Category Tags -->
+        <div style="display:flex; gap:0.8rem; margin-bottom:1rem;">
+            {% if product.brand %}
+                <span style="background:#eff6ff; color:#1d4ed8; padding:0.4rem 1rem; border-radius:15px; font-size:1.3rem; font-weight:600;">
+                    Brand: {{ product.brand }}
+                </span>
+            {% endif %}
+            {% if product.type %}
+                <span style="background:#f5f3ff; color:#6d28d9; padding:0.4rem 1rem; border-radius:15px; font-size:1.3rem; font-weight:600;">
+                    Category: {{ product.type }}
+                </span>
+            {% endif %}
+        </div>
+
+        <h1 style="font-size:3rem; font-weight:700; color:var(--black); margin-bottom:1rem;">{{ product.name }}</h1>
+
+        <!-- Rating Summary -->
+        <div class="stars" style="color:#f59e0b; font-size:1.6rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.8rem;">
+            <span>
+                <i class="fas fa-star"></i> {{ product.avg_rating }}
+            </span>
+            <span style="color:#64748b; font-size:1.4rem;">
+                ({{ product.rating_count }} customer reviews)
+            </span>
+        </div>
+
+        <!-- Price -->
+        <div style="font-size:2.8rem; font-weight:700; color:var(--primary); margin-bottom:1.5rem;">
+            Rs {{ product.price }}/-
+        </div>
+
+        <!-- Description -->
+        {% if product.description %}
+        <div style="font-size:1.5rem; color:#475569; line-height:1.7; margin-bottom:2rem;">
+            {{ product.description|linebreaks }}
+        </div>
+        {% endif %}
+
+        <!-- Order / Cart Form -->
+        <form action="{% url 'cart:add_to_cart' product.id %}" method="post">
+            {% csrf_token %}
+
+            <!-- Size Selector Chips -->
+            {% if product.parsed_sizes %}
+            <div style="margin-bottom: 2rem;">
+                <label style="font-size:1.5rem; font-weight:600; color:var(--black); display:flex; justify-content:space-between; align-items:center;">
+                    <span>Select Size (EU):</span>
+                    <span style="color:#64748b; font-size:1.3rem; font-weight:normal;"><i class="fas fa-check-circle" style="color:green;"></i> Standard fit</span>
+                </label>
+                <div class="size-chips">
+                    {% for size in product.parsed_sizes %}
+                    <div class="size-chip">
+                        <input type="radio" id="size_{{ forloop.counter }}" name="product_size" value="{{ size }}" {% if forloop.first %}checked{% endif %}>
+                        <label for="size_{{ forloop.counter }}">{{ size }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Stock & Quantity Controls -->
+            <div style="margin-bottom: 2rem;">
+                {% if product.is_in_stock %}
+                    <div style="color:#16a34a; font-size:1.45rem; font-weight:600; margin-bottom:1.2rem;">
+                        <i class="fas fa-circle-check"></i> In Stock ({{ product.quantity }} available)
+                    </div>
+                    <div style="display:flex; align-items:center; gap:1.2rem;">
+                        <label style="font-size:1.45rem; color:#334155; font-weight:600;">Quantity:</label>
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <button type="button" onclick="decrementQuantity(this)" style="width:36px; height:36px; border-radius:50%; background:#f1f5f9; border:1px solid #cbd5e1; font-size:1.8rem; font-weight:bold; cursor:pointer;">-</button>
+                            <input type="number" name="product_quantity" value="1" min="1" max="{{ product.quantity }}" class="qty" style="width:60px; padding:0.6rem; text-align:center; font-size:1.5rem; border:1px solid #cbd5e1; border-radius:6px; font-weight:600;">
+                            <button type="button" onclick="incrementQuantity(this)" style="width:36px; height:36px; border-radius:50%; background:#f1f5f9; border:1px solid #cbd5e1; font-size:1.8rem; font-weight:bold; cursor:pointer;">+</button>
+                        </div>
+                    </div>
+                {% else %}
+                    <div style="color:#dc2626; font-size:1.6rem; font-weight:600; margin-bottom:1.5rem;">
+                        <i class="fas fa-circle-xmark"></i> Currently Out of Stock
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Add to Cart CTA -->
+            <input type="hidden" name="product_name" value="{{ product.name }}">
+            <input type="hidden" name="product_price" value="{{ product.price }}">
+            <input type="hidden" name="product_image" value="{{ product.image }}">
+            
+            {% if product.is_in_stock %}
+                <button type="submit" class="btn" style="width:100%; padding:1.4rem; font-size:1.65rem; background:#10b981; font-weight:bold; display:flex; justify-content:center; align-items:center; gap:1rem;">
+                    <i class="fas fa-cart-plus"></i> Add to Shopping Cart
+                </button>
+            {% else %}
+                <button type="button" class="btn" style="width:100%; padding:1.4rem; font-size:1.65rem; background:#94a3b8; cursor:not-allowed;" disabled>
+                    Out of Stock
+                </button>
+            {% endif %}
+        </form>
+
+        <!-- Product Value Perks -->
+        <div class="perks-list">
+            <div class="perk-item">
+                <i class="fas fa-truck-fast"></i>
+                <span>Fast Home Delivery</span>
+            </div>
+            <div class="perk-item">
+                <i class="fas fa-certificate"></i>
+                <span>100% Genuine Shoe</span>
+            </div>
+            <div class="perk-item">
+                <i class="fas fa-hand-holding-dollar"></i>
+                <span>Cash on Delivery</span>
+            </div>
+            <div class="perk-item">
+                <i class="fas fa-shield-halved"></i>
+                <span>Khalti Verified</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Reviews & Feedback Section -->
+<section style="max-width:1200px; margin:4rem auto; padding:0 2rem;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); gap:3rem; align-items:start;">
+        
+        <!-- Left: Verified Customer Reviews -->
+        <div>
+            <h2 class="title" style="text-align:left; font-size:2.2rem; margin-bottom:1.5rem;">
+                Customer Feedback ({{ reviews.count }})
+            </h2>
+
+            <div class="reviews-list">
+                {% for rev in reviews %}
+                <div style="background:#ffffff; padding:2rem; border-radius:10px; border:1px solid #e2e8f0; box-shadow:0 4px 10px rgba(0,0,0,0.03); margin-bottom:1.5rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+                        <h4 style="font-size:1.6rem; color:var(--black); font-weight:600;">{{ rev.user.name|default:rev.user.username }}</h4>
+                        <span style="font-size:1.25rem; color:#94a3b8;">{{ rev.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div style="color:#f59e0b; font-size:1.4rem; margin-bottom:0.8rem;">
+                        {% for _ in "x"|rjust:rev.rating %}★{% endfor %}
+                    </div>
+                    <p style="font-size:1.45rem; color:#475569; line-height:1.6;">{{ rev.review_text }}</p>
+                </div>
+                {% empty %}
+                <p class="empty">No customer reviews yet. Be the first to share your thoughts!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right: Submit Review Card -->
+        <div style="background:#ffffff; padding:2.5rem; border-radius:10px; border:1px solid #e2e8f0; box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+            <h3 style="font-size:2rem; color:var(--black); margin-bottom:1.2rem;">
+                {% if user_review %}Update Your Review{% else %}Write a Product Review{% endif %}
+            </h3>
+            <form action="{% url 'store:submit_review' product.id %}" method="post">
+                {% csrf_token %}
+                <div style="margin-bottom:1.5rem;">
+                    <label style="font-size:1.45rem; color:#334155; font-weight:600; display:block; margin-bottom:0.5rem;">Rating Score:</label>
+                    <select name="rating" class="box" style="width:100%; font-size:1.45rem; padding:1rem; border:1px solid #cbd5e1; border-radius:6px; background:#f8fafc;">
+                        <option value="5" {% if user_review.rating == 5 %}selected{% endif %}>★★★★★ (5 - Excellent)</option>
+                        <option value="4" {% if user_review.rating == 4 %}selected{% endif %}>★★★★☆ (4 - Very Good)</option>
+                        <option value="3" {% if user_review.rating == 3 %}selected{% endif %}>★★★☆☆ (3 - Average)</option>
+                        <option value="2" {% if user_review.rating == 2 %}selected{% endif %}>★★☆☆☆ (2 - Below Average)</option>
+                        <option value="1" {% if user_review.rating == 1 %}selected{% endif %}>★☆☆☆☆ (1 - Poor)</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label style="font-size:1.45rem; color:#334155; font-weight:600; display:block; margin-bottom:0.5rem;">Review Comments:</label>
+                    <textarea name="review_text" rows="4" placeholder="How did this shoe fit? How is the cushioning, material, and sole grip?" required style="width:100%; font-size:1.45rem; padding:1.2rem; border:1px solid #cbd5e1; border-radius:6px; line-height:1.6;">{{ user_review.review_text|default:'' }}</textarea>
+                </div>
+
+                <input type="submit" value="{% if user_review %}Update Review{% else %}Post Review{% endif %}" class="btn" style="width:100%;">
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- 3. Smart Recommendations ("You May Also Like") -->
+{% if recommendations %}
+<section class="products" style="background:#f8fafc; padding:5rem 2rem;">
+    <div style="text-align:center; margin-bottom:2.5rem;">
+        <span style="background:#eff6ff; color:var(--primary); padding:0.5rem 1.4rem; border-radius:20px; font-size:1.3rem; font-weight:bold; text-transform:uppercase;">
+            <i class="fas fa-shuffle"></i> Similar Recommendations
+        </span>
+        <h1 class="title" style="margin-top:1rem;">You May Also Like</h1>
+    </div>
+
+    <div class="box-container">
+        {% for rec in recommendations %}
+        <div class="box">
+            <a href="{% url 'store:product_detail' rec.id %}">
+                <img class="image" src="{{ MEDIA_URL }}{{ rec.image }}" alt="{{ rec.name }}">
+            </a>
+            <div class="name">{{ rec.name }}</div>
+            <div class="stars" style="color:#f59e0b; font-size:1.4rem; margin:0.4rem 0;">
+                <i class="fas fa-star"></i> {{ rec.avg_rating }} ({{ rec.rating_count }})
+            </div>
+            <div class="price">Rs {{ rec.price }}/-</div>
+            <a href="{% url 'store:product_detail' rec.id %}" class="btn" style="background:var(--primary);">Inspect Footwear</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

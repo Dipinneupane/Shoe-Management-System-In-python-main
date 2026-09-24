@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Happy Fit{% endblock %}
+
+{% block content %}
+
+<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+    <h3>About Us</h3>
+    <p><a href="{% url 'store:home' %}">Home</a> / About</p>
+</div>
+
+<section class="about">
+    <div class="flex">
+        <div class="image">
+            <img src="{% static 'images/about-img.jpg' %}" alt="About Happy Fit">
+        </div>
+        <div class="content">
+            <h3>Why Choose Happy Fit?</h3>
+            <p>At Happy Fit, we believe every step you take should be effortless and supported. We meticulously select footwear that combines ergonomic shoe engineering, high-durability outsoles, and the latest trends in casual and athletic style.</p>
+            <p>Whether you're hitting the trail, the basketball court, or heading into an office meeting, our collection delivers the perfect fit tailored to your feet.</p>
+            <a href="{% url 'store:contact' %}" class="btn">Contact Us</a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+{% if testimonials %}
+<section class="reviews">
+    <h1 class="title">Customer Reviews</h1>
+    <div class="box-container">
+        {% for review in testimonials %}
+        <div class="box">
+            <img src="{{ MEDIA_URL }}{{ review.product.image }}" alt="{{ review.product.name }}">
+            <p>"{{ review.review_text|default:'Great quality and prompt delivery.' }}"</p>
+            <div class="stars" style="color:#ffc107; font-size:1.6rem; margin:1rem 0;">
+                {% for _ in "x"|rjust:review.rating %}★{% endfor %}
+            </div>
+            <h3>{{ review.user.name|default:review.user.username }}</h3>
+            <span style="color:#888;">Shoe: {{ review.product.name }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

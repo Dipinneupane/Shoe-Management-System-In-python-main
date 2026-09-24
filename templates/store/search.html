@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Footwear - Happy Fit{% endblock %}
+
+{% block content %}
+
+<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+    <h3>Search Page</h3>
+    <p><a href="{% url 'store:home' %}">Home</a> / Search</p>
+</div>
+
+<section class="search-form">
+    <form action="{% url 'store:search' %}" method="get">
+        <input type="text" name="search" placeholder="search footwear by name, brand, or style..." value="{{ search_query }}" class="box">
+        <input type="submit" value="Search" class="btn">
+    </form>
+</section>
+
+<section class="products" style="padding-top: 0;">
+    <div class="box-container">
+        {% if products %}
+            {% for product in products %}
+            <form action="" method="post" class="box">
+                {% csrf_token %}
+                <a href="{% url 'store:product_detail' product.id %}">
+                    <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
+                </a>
+                <div class="name">{{ product.name }}</div>
+                <div class="stars" style="color:#ffc107; font-size:1.4rem; margin:0.5rem 0;">
+                    <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
+                </div>
+                <div class="price">Rs {{ product.price }}/-</div>
+                <input type="number" min="1" max="{{ product.quantity|default:1 }}" name="product_quantity" value="1" class="qty">
+                <input type="hidden" name="product_name" value="{{ product.name }}">
+                <input type="hidden" name="product_price" value="{{ product.price }}">
+                <input type="hidden" name="product_image" value="{{ product.image }}">
+                {% if product.is_in_stock %}
+                    <input type="submit" value="add to cart" name="add_to_cart" class="btn">
+                {% else %}
+                    <input type="button" value="out of stock" class="btn" style="background:#888;" disabled>
+                {% endif %}
+            </form>
+            {% endfor %}
+        {% else %}
+            {% if search_query %}
+                <p class="empty">No footwear found matching "{{ search_query }}"!</p>
+            {% else %}
+                <p class="empty">Search something to find your favorite shoes!</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Manage Products - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+.add-products form, .edit-product form {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 3rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    max-width: 65rem;
+    margin: 2rem auto;
+    border: 1px solid #e2e8f0;
+}
+.add-products form .box, .edit-product form .box {
+    width: 100%;
+    background-color: #f8fafc;
+    border-radius: 6px;
+    margin: 1rem 0;
+    padding: 1.2rem 1.4rem;
+    font-size: 1.5rem;
+    border: 1px solid #cbd5e1;
+    transition: border-color 0.2s;
+}
+.add-products form .box:focus, .edit-product form .box:focus {
+    border-color: var(--primary);
+    background-color: #fff;
+}
+.show-products .box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.show-products .box {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.show-products .box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+.show-products .box img {
+    height: 180px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+.stock-badge {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    border-radius: 20px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+.stock-in { background: #dcfce7; color: #15803d; }
+.stock-out { background: #fee2e2; color: #b91c1c; }
+.image-preview-container {
+    width: 100%;
+    height: 160px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem 0;
+    background: #f8fafc;
+    overflow: hidden;
+}
+.image-preview-container img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Edit Product Section if updating -->
+{% if update_product %}
+<section class="edit-product">
+    <h1 class="title">Update Footwear Details</h1>
+    <form action="{% url 'store_admin:products' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="update_p_id" value="{{ update_product.id }}">
+        
+        <div style="margin-bottom:1.5rem;">
+            <img src="{{ MEDIA_URL }}{{ update_product.image }}" alt="{{ update_product.name }}" style="height:140px; border-radius:8px; object-fit:cover; border:2px solid #e2e8f0;">
+        </div>
+        
+        <input type="text" name="update_name" value="{{ update_product.name }}" required placeholder="Product Name" class="box">
+        <input type="number" step="0.01" name="update_price" value="{{ update_product.price }}" min="0" required placeholder="Price in Rs" class="box">
+        <input type="number" name="update_quantity" value="{{ update_product.quantity }}" min="0" required placeholder="Stock Quantity" class="box">
+        
+        <input type="text" name="update_brand" value="{{ update_product.brand }}" placeholder="Brand (e.g. Nike, Adidas, Goldstar)" class="box">
+        <input type="text" name="update_type" value="{{ update_product.type }}" placeholder="Category/Type (e.g. Running, Casual, Formal)" class="box">
+        <input type="text" name="update_sizes" value="{{ update_product.sizes }}" placeholder="Available Sizes (comma-separated: 39, 40, 41)" class="box">
+        
+        <textarea name="update_description" placeholder="Description" rows="4" class="box">{{ update_product.description }}</textarea>
+        
+        <label style="font-size:1.4rem; text-align:left; display:block; font-weight:600; margin-top:1rem;">Replace Image (optional):</label>
+        <input type="file" name="update_image" accept="image/jpg, image/jpeg, image/png, image/webp" class="box">
+        
+        <div style="display:flex; justify-content:center; gap:12px; margin-top:1.5rem;">
+            <input type="submit" value="Update Product" name="update_product" class="btn" style="margin:0;">
+            <a href="{% url 'store_admin:products' %}" class="option-btn" style="margin:0;">Cancel</a>
+        </div>
+    </form>
+</section>
+{% else %}
+
+<!-- Add New Product Form -->
+<section class="add-products">
+    <h1 class="title">Add Footwear to Catalog</h1>
+    <form action="{% url 'store_admin:products' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h3 style="font-size:2rem; margin-bottom:1rem; color:var(--black);">Shoe Specifications</h3>
+        <input type="text" name="name" required placeholder="Shoe Name (e.g. Nike Air Pegasus)" class="box">
+        <input type="number" step="0.01" min="0" name="price" required placeholder="Price in Rs (e.g. 7500)" class="box">
+        <input type="number" min="0" name="quantity" required placeholder="Available Stock Quantity (e.g. 20)" class="box">
+        
+        <input type="text" name="brand" placeholder="Brand Name (e.g. Nike, Adidas, Goldstar, Puma)" class="box">
+        <input type="text" name="type" placeholder="Shoe Type (e.g. Sneakers, Sports, Boots, Casual)" class="box">
+        <input type="text" name="sizes" placeholder="Available Sizes (e.g. 38, 39, 40, 41, 42)" class="box">
+        
+        <textarea name="description" placeholder="Product details, material, and features..." class="box" rows="3"></textarea>
+        
+        <label style="font-size:1.4rem; text-align:left; display:block; font-weight:600; margin-top:0.8rem;">Select Product Image:</label>
+        <input type="file" name="image" id="productImageInput" accept="image/jpg, image/jpeg, image/png, image/webp" required class="box">
+        
+        <div class="image-preview-container" id="previewContainer">
+            <span id="previewText" style="color:#94a3b8; font-size:1.4rem;"><i class="fas fa-image"></i> Image preview will appear here</span>
+            <img id="previewImg" alt="Preview">
+        </div>
+
+        <input type="submit" value="Add Footwear" name="add_product" class="btn" style="margin-top:1rem;">
+    </form>
+</section>
+{% endif %}
+
+<!-- Product Catalog List -->
+<section class="show-products">
+    <h1 class="title">Current Inventory ({{ products.count }} Items)</h1>
+    <div class="box-container">
+        {% for product in products %}
+        <div class="box">
+            <img src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
+            <div class="name" style="font-size:1.8rem; font-weight:600;">{{ product.name }}</div>
+            <div class="price" style="font-size:1.7rem; color:var(--primary); font-weight:bold; margin:0.6rem 0;">Rs {{ product.price }}/-</div>
+            
+            {% if product.is_in_stock %}
+                <span class="stock-badge stock-in">In Stock ({{ product.quantity }})</span>
+            {% else %}
+                <span class="stock-badge stock-out">Out of Stock</span>
+            {% endif %}
+            
+            <div style="font-size:1.35rem; color:#666; margin-bottom:1.2rem;">
+                {% if product.brand %}<span>Brand: <strong>{{ product.brand }}</strong></span> | {% endif %}
+                {% if product.type %}<span>Type: <strong>{{ product.type }}</strong></span>{% endif %}
+                {% if product.sizes %}<div>Sizes: {{ product.sizes }}</div>{% endif %}
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:8px;">
+                <a href="{% url 'store_admin:products' %}?update={{ product.id }}" class="option-btn" style="margin:0; padding:0.8rem 1.6rem; font-size:1.35rem;">Edit</a>
+                <a href="{% url 'store_admin:products' %}?delete={{ product.id }}" class="delete-btn" style="margin:0; padding:0.8rem 1.6rem; font-size:1.35rem;" onclick="return confirm('Are you sure you want to delete this product?');">Delete</a>
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty" style="grid-column:1/-1;">No products found in the catalog!</p>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const imageInput = document.getElementById('productImageInput');
+const previewImg = document.getElementById('previewImg');
+const previewText = document.getElementById('previewText');
+
+if (imageInput && previewImg && previewText) {
+    imageInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+                previewText.style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            previewImg.style.display = 'none';
+            previewText.style.display = 'block';
+        }
+    });
+}
+</script>
+{% endblock %}

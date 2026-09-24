@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - Happy Fit{% endblock %}
+
+{% block content %}
+
+<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+    <h3>Contact Us</h3>
+    <p><a href="{% url 'store:home' %}">Home</a> / Contact</p>
+</div>
+
+<section class="contact">
+    <form action="{% url 'store:contact' %}" method="post" id="contactForm">
+        {% csrf_token %}
+        <h3>Say Something!</h3>
+        <input type="text" name="name" required placeholder="enter your name" class="box" value="{{ user.name|default:user.username }}">
+        <input type="email" name="email" required placeholder="enter your email" class="box" value="{{ user.email }}">
+        <input type="tel" name="number" id="phoneInput" required placeholder="enter your 10-digit phone number" maxlength="10" pattern="^[0-9]{10}$" class="box">
+        <textarea name="message" class="box" placeholder="enter your message" id="" cols="30" rows="10" required></textarea>
+        <input type="submit" value="send message" name="send" class="btn">
+    </form>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const phoneInput = document.getElementById('phoneInput');
+phoneInput.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+});
+
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    if (phoneInput.value.length !== 10) {
+        e.preventDefault();
+        alert('Phone number must be exactly 10 digits!');
+        phoneInput.focus();
+    }
+});
+</script>
+{% endblock %}

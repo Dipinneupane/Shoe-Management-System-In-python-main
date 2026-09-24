@@ -1,0 +1,60 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Messages - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+.messages-section .box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.messages-section .box {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+}
+.messages-section .box p {
+    font-size: 1.5rem;
+    color: var(--light-color);
+    margin-bottom: 0.8rem;
+}
+.messages-section .box p span {
+    color: var(--black);
+    font-weight: 500;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="messages-section" style="padding: 2rem;">
+    <h1 class="title">Customer Messages Inbox</h1>
+
+    <div class="box-container">
+        {% for msg in messages_list %}
+        <div class="box">
+            <p> User ID : <span>#{{ msg.user.id }}</span> </p>
+            <p> Name : <span>{{ msg.name }}</span> </p>
+            <p> Phone : <span>{{ msg.number }}</span> </p>
+            <p> Email : <span>{{ msg.email }}</span> </p>
+            <div style="background:#f9f9f9; padding:1.2rem; border-radius:6px; margin: 1rem 0; font-size:1.4rem; color:#444; line-height:1.6;">
+                {{ msg.message }}
+            </div>
+            
+            <a href="{% url 'store_admin:contacts' %}?delete={{ msg.id }}" onclick="return confirm('Delete this message permanently?');" class="delete-btn" style="width:100%; text-align:center; display:block;">
+                Delete Message
+            </a>
+        </div>
+        {% empty %}
+        <p class="empty">No customer messages yet!</p>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

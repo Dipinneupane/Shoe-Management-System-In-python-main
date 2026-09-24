@@ -1,0 +1,95 @@
+.product-rating {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+}
+
+.product-rating i {
+    color: #ffc107;
+    font-size: 1rem;
+    margin-right: 2px;
+}
+
+.product-rating .rating-count {
+    margin-left: 5px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.box .product-rating {
+    justify-content: center;
+}
+
+/* Product page specific styles */
+.product-details .product-rating {
+    margin: 15px 0;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+}
+
+.product-details .rating-stars {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.product-details .rating-stars input[type="radio"] {
+    display: none;
+}
+
+.product-details .rating-stars label {
+    cursor: pointer;
+    font-size: 1.5em;
+    color: #ddd;
+    padding: 0 2px;
+    transition: color 0.2s;
+}
+
+.product-details .rating-stars label:hover,
+.product-details .rating-stars label:hover ~ label,
+.product-details .rating-stars input[type="radio"]:checked ~ label {
+    color: #ffc107;
+}
+
+.product-details .rating-stars input[type="radio"]:checked ~ label {
+    color: #ffc107;
+}
+
+.product-details .rating-count {
+    color: #666;
+    font-size: 0.9em;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* For the review form */
+.review-form .rating-stars {
+    margin: 10px 0;
+}
+
+.review-form .rating-stars label {
+    font-size: 1.8em;
+    padding: 0 3px;
+}
+
+/* Animation for rating stars */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.product-details .rating-stars label:hover {
+    animation: pulse 0.5s ease-in-out;
+}
+
+/* Shop page specific styles */
+.products .box .product-rating {
+    margin: 5px 0 10px 0;
+}
+
+/* Home page specific styles */
+.home .box .product-rating {
+    margin-bottom: 12px;
+}

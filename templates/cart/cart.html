@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - Happy Fit{% endblock %}
+
+{% block content %}
+
+<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+    <h3>Shopping Cart</h3>
+    <p><a href="{% url 'store:home' %}">Home</a> / Cart</p>
+</div>
+
+<section class="shopping-cart">
+    <h1 class="title">Products In Your Cart</h1>
+
+    <div class="box-container">
+        {% if cart_items %}
+            {% for item in cart_items %}
+            <div class="box">
+                <a href="{% url 'cart:delete_item' item.ids|join:',' %}" class="fas fa-times" onclick="return confirm('Delete this item from cart?');" title="Remove item"></a>
+                <img src="{{ MEDIA_URL }}{{ item.image }}" alt="{{ item.name }}" style="height:180px; width:100%; object-fit:cover; border-radius:8px; margin-bottom:1rem;">
+                <div class="name" style="font-size:1.8rem; font-weight:600;">{{ item.name }}</div>
+
+                {% if item.brand or item.type or item.size %}
+                <div style="font-size:1.35rem; color:#666; margin:0.6rem 0;">
+                    {% if item.size %}<span style="background:#e0f2fe; color:#0369a1; padding:0.3rem 0.8rem; border-radius:4px; margin-right:0.5rem; font-weight:600;">Size: {{ item.size }}</span>{% endif %}
+                    {% if item.brand %}<span style="color:#555;">Brand: {{ item.brand }}</span>{% endif %}
+                </div>
+                {% endif %}
+
+                <div class="price" style="font-size:1.6rem; color:var(--primary); font-weight:bold; margin:0.5rem 0;">Rs {{ item.price }}/-</div>
+
+                <!-- Update Quantity Form with Stepper -->
+                <form action="{% url 'cart:update_cart' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="cart_ids" value="{{ item.ids|join:',' }}">
+                    <div style="display:flex; justify-content:center; align-items:center; gap:0.6rem; margin:1.2rem 0;">
+                        <button type="button" onclick="decrementQuantity(this)" style="width:34px; height:34px; border-radius:50%; background:#f1f5f9; border:1px solid #cbd5e1; font-size:1.8rem; font-weight:bold; cursor:pointer; line-height:1;">-</button>
+                        <input type="number" min="1" max="100" name="qty" value="{{ item.quantity }}" class="qty" style="width:55px; padding:0.5rem; font-size:1.5rem; border:1px solid #cbd5e1; border-radius:6px; text-align:center; font-weight:600;">
+                        <button type="button" onclick="incrementQuantity(this)" style="width:34px; height:34px; border-radius:50%; background:#f1f5f9; border:1px solid #cbd5e1; font-size:1.8rem; font-weight:bold; cursor:pointer; line-height:1;">+</button>
+                        <input type="submit" name="update_cart" value="Update" class="option-btn" style="margin:0; padding:0.6rem 1.4rem; font-size:1.3rem;">
+                    </div>
+                </form>
+
+                <div class="sub-total" style="font-size:1.5rem; border-top:1px dashed #e2e8f0; padding-top:0.8rem; margin-top:0.8rem;">
+                    Subtotal : <span style="font-weight:bold; color:var(--black);">Rs {{ item.subtotal }}/-</span>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align:center; width:100%; grid-column:1/-1;">
+                <p class="empty">Your shopping cart is empty!</p>
+                <div style="margin-top:2rem;">
+                    <a href="{% url 'store:shop' %}" class="btn">Explore Footwear Catalog</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if cart_items %}
+    <!-- Cart Summary & Actions -->
+    <div style="margin-top: 3rem; text-align:center;">
+        <a href="{% url 'cart:delete_all' %}" class="delete-btn" onclick="return confirm('Are you sure you want to empty your entire cart?');">
+            <i class="fas fa-trash-alt"></i> Empty Entire Cart
+        </a>
+    </div>
+
+    <div class="cart-total" style="background:#fff; border-radius:8px; border:1px solid #e2e8f0; box-shadow:0 4px 15px rgba(0,0,0,0.05); padding:2.5rem; max-width:600px; margin:3rem auto;">
+        <p style="font-size:2rem; margin-bottom:1.5rem;">Grand Total : <span style="color:var(--primary); font-weight:bold;">Rs {{ grand_total }}/-</span></p>
+        <div class="flex" style="display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap;">
+            <a href="{% url 'store:shop' %}" class="option-btn" style="margin:0;">Continue Shopping</a>
+            <a href="{% url 'orders:checkout' %}" class="btn" style="margin:0; background:#22c55e;">
+                <i class="fas fa-credit-card"></i> Proceed to Checkout
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</section>
+
+{% endblock %}

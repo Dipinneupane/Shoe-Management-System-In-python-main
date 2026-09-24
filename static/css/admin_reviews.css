@@ -1,0 +1,206 @@
+/* Admin Reviews - page scoped styles */
+
+.reviews-section {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.reviews-section .section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.reviews-section .section-header .title {
+  margin: 0;
+  text-align: left;
+  font-size: var(--font-size-xxl);
+  text-transform: none;
+}
+
+.reviews-section .section-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Search */
+.reviews-section .search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  padding: 0.4rem 0.6rem 0.4rem 1rem;
+  box-shadow: var(--box-shadow);
+}
+
+.reviews-section .search-container input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--font-size-md);
+  min-width: 26rem;
+}
+
+.reviews-section .search-container button {
+  border: none;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: var(--border-radius);
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+}
+
+.reviews-section .search-container button i {
+  font-size: 1.4rem;
+}
+
+/* Filter */
+.reviews-section .filter-container select {
+  padding: 0.9rem 1.2rem;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  background: var(--white);
+  font-size: var(--font-size-md);
+  color: var(--dark);
+}
+
+/* Grid */
+.reviews-section .reviews-container {
+  margin-top: 1rem;
+}
+
+.reviews-section .reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card */
+.reviews-section .review-card {
+  background: var(--white);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card header */
+.reviews-section .review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1.2rem 0.8rem;
+  border-bottom: var(--border);
+}
+
+.reviews-section .product-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.reviews-section .product-info img {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: var(--border);
+}
+
+.reviews-section .product-info h3 {
+  font-size: var(--font-size-lg);
+  color: var(--dark);
+}
+
+.reviews-section .review-date {
+  font-size: var(--font-size-sm);
+  color: var(--medium);
+}
+
+/* Status badge */
+.reviews-section .review-status {
+  font-size: var(--font-size-sm);
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.reviews-section .review-status.approved {
+  color: var(--success);
+  background: rgba(76, 175, 80, 0.08);
+  border-color: rgba(76, 175, 80, 0.25);
+}
+
+/* Content */
+.reviews-section .review-content {
+  padding: 1.2rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.reviews-section .reviewer-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reviews-section .reviewer-name {
+  font-size: var(--font-size-md);
+  color: var(--dark);
+}
+
+/* Rating */
+.reviews-section .rating i {
+  color: #ffcc00;
+  margin-left: 0.15rem;
+}
+
+/* Review text */
+.reviews-section .review-text {
+  font-size: var(--font-size-md);
+  color: var(--medium);
+  line-height: 1.6;
+}
+
+/* Actions */
+.reviews-section .review-actions {
+  padding: 0.8rem 1.2rem 1.2rem;
+  display: flex;
+  gap: 0.8rem;
+  justify-content: flex-end;
+}
+
+.reviews-section .review-actions .btn {
+  padding: 0.8rem 1.2rem;
+  font-size: var(--font-size-md);
+}
+
+/* Empty state inside grid */
+.reviews-section .empty {
+  grid-column: 1 / -1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .reviews-section .section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reviews-section .section-actions {
+    justify-content: space-between;
+  }
+
+  .reviews-section .search-container input {
+    min-width: 0;
+    width: 100%;
+  }
+}

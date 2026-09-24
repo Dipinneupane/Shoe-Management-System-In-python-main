@@ -1,0 +1,415 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account – Happy Fit Footwear</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f8fafc;
+        }
+
+        /* LEFT BRAND PANEL */
+        .auth-brand-panel {
+            background: linear-gradient(145deg, #0f172a 0%, #1e3a5f 60%, #1a56db 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 5rem 6rem;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+        }
+        .auth-brand-panel::before {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+            bottom: -150px; right: -120px;
+        }
+        .auth-brand-panel::after {
+            content: '';
+            position: absolute;
+            width: 280px; height: 280px;
+            background: rgba(26,86,219,0.35);
+            border-radius: 50%;
+            top: -80px; left: -60px;
+        }
+        .brand-logo {
+            font-size: 3.2rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 3.5rem;
+            position: relative; z-index: 1;
+            letter-spacing: -0.5px;
+        }
+        .brand-logo i { color: #60a5fa; }
+        .brand-tagline {
+            font-size: 3.6rem;
+            font-weight: 700;
+            line-height: 1.25;
+            margin-bottom: 2rem;
+            position: relative; z-index: 1;
+        }
+        .brand-tagline span { color: #60a5fa; }
+        .brand-sub {
+            font-size: 1.6rem;
+            color: #94a3b8;
+            line-height: 1.7;
+            max-width: 380px;
+            position: relative; z-index: 1;
+            margin-bottom: 3.5rem;
+        }
+        .brand-steps {
+            list-style: none;
+            position: relative; z-index: 1;
+        }
+        .brand-steps li {
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 1.6rem;
+        }
+        .brand-steps .step-num {
+            width: 30px; height: 30px;
+            background: rgba(96,165,250,0.25);
+            border: 1.5px solid #60a5fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #60a5fa;
+            flex-shrink: 0;
+        }
+
+        /* RIGHT FORM PANEL */
+        .auth-form-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 5rem;
+            background: #ffffff;
+            overflow-y: auto;
+        }
+        .auth-form-box {
+            width: 100%;
+            max-width: 440px;
+        }
+        .auth-form-box h2 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+        .auth-form-box .auth-subtitle {
+            font-size: 1.45rem;
+            color: #64748b;
+            margin-bottom: 3rem;
+        }
+
+        .auth-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .auth-field {
+            margin-bottom: 1.8rem;
+        }
+        .auth-field label {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.55rem;
+            letter-spacing: 0.3px;
+        }
+        .auth-input-wrap {
+            position: relative;
+        }
+        .auth-input-wrap i.field-icon {
+            position: absolute;
+            left: 1.4rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.4rem;
+            pointer-events: none;
+        }
+        .auth-input-wrap input {
+            width: 100%;
+            padding: 1.25rem 1.2rem 1.25rem 4.2rem;
+            font-size: 1.45rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 9px;
+            background: #f8fafc;
+            color: #0f172a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .auth-input-wrap input:focus {
+            border-color: #1a56db;
+            box-shadow: 0 0 0 3px rgba(26,86,219,0.12);
+            background: #fff;
+        }
+        .auth-input-wrap .toggle-pw {
+            position: absolute;
+            right: 1.4rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .field-status {
+            font-size: 1.25rem;
+            margin-top: 0.4rem;
+            min-height: 1.6rem;
+            display: block;
+        }
+        .field-status.ok { color: #16a34a; }
+        .field-status.err { color: #dc2626; }
+
+        .auth-btn {
+            width: 100%;
+            padding: 1.45rem;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(90deg, #1a56db, #1e40af);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: all 0.25s ease;
+        }
+        .auth-btn:hover {
+            background: linear-gradient(90deg, #1e40af, #1a56db);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26,86,219,0.35);
+        }
+
+        .auth-link {
+            text-align: center;
+            font-size: 1.45rem;
+            color: #64748b;
+            margin-top: 2rem;
+        }
+        .auth-link a {
+            color: #1a56db;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .auth-link a:hover { text-decoration: underline; }
+
+        .notification-container {
+            position: fixed;
+            top: 2rem; right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            body { grid-template-columns: 1fr; }
+            .auth-brand-panel { display: none; }
+            .auth-form-panel { padding: 3rem 2rem; }
+            .auth-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    {% if messages %}
+        <div class="notification-container">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    <span>{{ message }}</span>
+                    <i class="fas fa-times" onclick="this.parentElement.remove();"></i>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- LEFT: Brand Panel -->
+    <div class="auth-brand-panel">
+        <div class="brand-logo">
+            <i class="fas fa-shoe-prints"></i> Happy Fit
+        </div>
+        <h1 class="brand-tagline">Join <span>Thousands</span> of Happy Shoppers</h1>
+        <p class="brand-sub">Create your free account and get access to exclusive deals, order tracking, and AI-powered shoe recommendations.</p>
+        <ul class="brand-steps">
+            <li><span class="step-num">1</span> Create your free account in seconds</li>
+            <li><span class="step-num">2</span> Browse 100+ authentic footwear styles</li>
+            <li><span class="step-num">3</span> Get AI recommendations for your size</li>
+            <li><span class="step-num">4</span> Delivered anywhere across Nepal</li>
+        </ul>
+    </div>
+
+    <!-- RIGHT: Form Panel -->
+    <div class="auth-form-panel">
+        <div class="auth-form-box">
+            <h2>Create Account</h2>
+            <p class="auth-subtitle">Fill in your details to get started with Happy Fit.</p>
+
+            <form action="{% url 'accounts:register' %}" method="post" id="registerForm">
+                {% csrf_token %}
+
+                <!-- Name -->
+                <div class="auth-field">
+                    <label for="nameInput"><i class="fas fa-user" style="color:#94a3b8;"></i> Full Name</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-user field-icon"></i>
+                        <input type="text" id="nameInput" name="name"
+                            placeholder="Your full name"
+                            pattern="[A-Za-z\s]+" title="Letters and spaces only"
+                            required autocomplete="name">
+                    </div>
+                    <span class="field-status" id="nameStatus"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="auth-field">
+                    <label for="emailInput"><i class="fas fa-envelope" style="color:#94a3b8;"></i> Gmail Address</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-envelope field-icon"></i>
+                        <input type="email" id="emailInput" name="email"
+                            placeholder="you@gmail.com"
+                            pattern="[a-zA-Z0-9._%+\-]+@gmail\.com$"
+                            title="Must be a @gmail.com address"
+                            required autocomplete="email">
+                    </div>
+                    <span class="field-status" id="emailStatus"></span>
+                </div>
+
+                <!-- Passwords side by side -->
+                <div class="auth-row">
+                    <div class="auth-field">
+                        <label for="passwordInput">Password</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-lock field-icon"></i>
+                            <input type="password" id="passwordInput" name="password"
+                                placeholder="Min 8 chars" required minlength="8">
+                            <i class="fas fa-eye toggle-pw" id="togglePw1"></i>
+                        </div>
+                    </div>
+                    <div class="auth-field">
+                        <label for="cpasswordInput">Confirm</label>
+                        <div class="auth-input-wrap">
+                            <i class="fas fa-lock field-icon"></i>
+                            <input type="password" id="cpasswordInput" name="cpassword"
+                                placeholder="Repeat password" required>
+                            <i class="fas fa-eye toggle-pw" id="togglePw2"></i>
+                        </div>
+                    </div>
+                </div>
+                <span class="field-status" id="pwMatchStatus"></span>
+
+                <button type="submit" class="auth-btn" id="submitBtn">
+                    <i class="fas fa-user-plus"></i> Create My Account
+                </button>
+            </form>
+
+            <p class="auth-link">Already have an account? <a href="{% url 'accounts:login' %}">Sign in</a></p>
+        </div>
+    </div>
+
+    <script>
+    const checkAvailabilityUrl = "{% url 'accounts:check_availability' %}";
+
+    // Toggle password visibility
+    function setupToggle(toggleId, inputId) {
+        document.getElementById(toggleId).addEventListener('click', function() {
+            const inp = document.getElementById(inputId);
+            inp.type = (inp.type === 'password') ? 'text' : 'password';
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    }
+    setupToggle('togglePw1', 'passwordInput');
+    setupToggle('togglePw2', 'cpasswordInput');
+
+    // Password match check
+    document.getElementById('cpasswordInput').addEventListener('input', function() {
+        const pw = document.getElementById('passwordInput').value;
+        const status = document.getElementById('pwMatchStatus');
+        if (this.value === '') { status.textContent = ''; return; }
+        if (this.value === pw) {
+            status.className = 'field-status ok';
+            status.textContent = '✔ Passwords match';
+        } else {
+            status.className = 'field-status err';
+            status.textContent = '✘ Passwords do not match';
+        }
+    });
+
+    // AJAX name check
+    document.getElementById('nameInput').addEventListener('blur', function() {
+        const val = this.value.trim();
+        const status = document.getElementById('nameStatus');
+        if (!val) return;
+        const fd = new FormData();
+        fd.append('type', 'username');
+        fd.append('value', val);
+        fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        fetch(checkAvailabilityUrl, { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                if (d.available === false) {
+                    status.className = 'field-status err';
+                    status.textContent = '✘ Name already registered';
+                } else if (d.available === true) {
+                    status.className = 'field-status ok';
+                    status.textContent = '✔ Name available';
+                }
+            }).catch(() => {});
+    });
+
+    // AJAX email check
+    document.getElementById('emailInput').addEventListener('blur', function() {
+        const val = this.value.trim();
+        const status = document.getElementById('emailStatus');
+        if (!val || !val.endsWith('@gmail.com')) return;
+        const fd = new FormData();
+        fd.append('type', 'email');
+        fd.append('value', val);
+        fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        fetch(checkAvailabilityUrl, { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(d => {
+                if (d.available === false) {
+                    status.className = 'field-status err';
+                    status.textContent = '✘ Email already registered';
+                } else if (d.available === true) {
+                    status.className = 'field-status ok';
+                    status.textContent = '✔ Email available';
+                }
+            }).catch(() => {});
+    });
+    </script>
+
+</body>
+</html>

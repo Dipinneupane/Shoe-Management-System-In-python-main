@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Secure Checkout - Happy Fit{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+<style>
+/* Modern 2-Column Checkout */
+.checkout-stepper {
+    max-width: 800px;
+    margin: 2.5rem auto 3.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 0 2rem;
+}
+.checkout-stepper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 40px;
+    right: 40px;
+    height: 2px;
+    background: #cbd5e1;
+    z-index: 1;
+    transform: translateY(-50%);
+}
+.step-item {
+    position: relative;
+    z-index: 2;
+    background: #ffffff;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+.step-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+.step-item.active .step-icon {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(58, 134, 255, 0.2);
+}
+.step-item.completed .step-icon {
+    background: #10b981;
+    color: #ffffff;
+}
+.step-label {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.checkout-grid {
+    max-width: 1200px;
+    margin: 0 auto 5rem;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 3.5rem;
+    align-items: start;
+}
+@media (max-width: 850px) {
+    .checkout-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.checkout-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    padding: 3rem;
+}
+.checkout-card h3 {
+    font-size: 2rem;
+    color: var(--black);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.checkout-form-group {
+    margin-bottom: 1.8rem;
+}
+.checkout-form-group label {
+    display: block;
+    font-size: 1.45rem;
+    color: #334155;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+}
+.checkout-form-group input {
+    width: 100%;
+    padding: 1.2rem 1.4rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+}
+.checkout-form-group input:focus {
+    border-color: var(--primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.15);
+}
+
+.order-items-scroll {
+    max-height: 340px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+.order-item-row {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+.order-item-row img {
+    width: 65px;
+    height: 65px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Header Banner -->
+<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+    <h3>Secure Checkout</h3>
+    <p><a href="{% url 'store:home' %}">Home</a> / <a href="{% url 'cart:cart' %}">Cart</a> / Checkout</p>
+</div>
+
+<!-- Checkout Stepper Bar -->
+<div class="checkout-stepper">
+    <div class="step-item completed">
+        <div class="step-icon"><i class="fas fa-check"></i></div>
+        <span class="step-label">Shopping Cart</span>
+    </div>
+    <div class="step-item active">
+        <div class="step-icon">2</div>
+        <span class="step-label">Shipping & Payment</span>
+    </div>
+    <div class="step-item">
+        <div class="step-icon">3</div>
+        <span class="step-label">Order Confirmed</span>
+    </div>
+</div>
+
+<!-- Order Success Banner if order just completed -->
+{% if is_success %}
+<div style="max-width:700px; margin:2rem auto 4rem; padding:3rem; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; text-align:center;">
+    <i class="fas fa-circle-check" style="font-size:4.5rem; color:#16a34a; margin-bottom:1rem;"></i>
+    <h3 style="font-size:2.4rem; color:#15803d; margin-bottom:1rem;">Order Placed Successfully!</h3>
+    <p style="font-size:1.6rem; color:#475569; margin-bottom:2.5rem;">
+        Thank you for choosing Happy Fit. Our dispatch team in Kathmandu is preparing your footwear package.
+    </p>
+    <div style="display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap;">
+        <a href="{% url 'store:home' %}" class="btn" style="background:var(--primary); font-size:1.5rem; padding:1.1rem 2.2rem;">
+            Continue Shopping
+        </a>
+        <a href="{% url 'orders:history' %}" class="option-btn" style="font-size:1.5rem; padding:1.1rem 2.2rem; margin:0;">
+            Track Order History
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% if not is_success %}
+<!-- Main Checkout 2-Column Grid -->
+<div class="checkout-grid">
+
+    <!-- Left Column: Shipping & Payment Options -->
+    <div class="checkout-card">
+        <h3><i class="fas fa-truck" style="color:var(--primary);"></i> Shipping Information</h3>
+
+        <form id="checkout-form" action="" method="post">
+            {% csrf_token %}
+
+            <div class="checkout-form-group">
+                <label for="name">Recipient Name:</label>
+                <input type="text" name="name" id="name" required placeholder="Full Name" value="{{ prefill_name }}">
+            </div>
+
+            <div class="checkout-form-group">
+                <label for="number">Contact Mobile (10 digits):</label>
+                <input type="tel" name="number" id="number" required placeholder="e.g. 9841234567" maxlength="10" pattern="^[0-9]{10}$">
+                <span id="phoneNotice" style="font-size:1.25rem; color:#64748b; margin-top:0.4rem; display:block;">
+                    Delivery confirmation SMS will be sent to this number.
+                </span>
+            </div>
+
+            <div class="checkout-form-group">
+                <label for="email">Account Email:</label>
+                <input type="email" name="email" id="email" required placeholder="Email Address" value="{{ prefill_email }}">
+            </div>
+
+            <!-- Payment Methods Selection -->
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #f1f5f9;">
+                <h3 style="margin-bottom:1.5rem; border:none; padding:0;">
+                    <i class="fas fa-credit-card" style="color:var(--primary);"></i> Select Payment Method
+                </h3>
+
+                <div style="display:flex; flex-direction:column; gap:1.2rem; margin-top:1.5rem;">
+                    <!-- Option 1: Cash on Delivery -->
+                    <button type="submit" name="order_btn" class="btn" style="width:100%; padding:1.4rem; font-size:1.6rem; background:#10b981; font-weight:600; display:flex; justify-content:center; align-items:center; gap:1rem;">
+                        <i class="fas fa-hand-holding-dollar"></i> Place Order (Cash on Delivery)
+                    </button>
+
+                    <!-- Option 2: Pay with Khalti -->
+                    <button type="button" id="khalti-button" class="btn" style="width:100%; padding:1.4rem; font-size:1.6rem; background:#5d2dfd; font-weight:600; display:flex; justify-content:center; align-items:center; gap:1rem;">
+                        <i class="fas fa-wallet"></i> Pay with Khalti (Instant Verification)
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Right Column: Sticky Order Summary -->
+    <div class="checkout-card" style="position:sticky; top:100px;">
+        <h3><i class="fas fa-receipt" style="color:var(--primary);"></i> Order Summary</h3>
+
+        <div class="order-items-scroll">
+            {% if cart_items %}
+                {% for item in cart_items %}
+                <div class="order-item-row">
+                    <img src="{{ MEDIA_URL }}{{ item.image }}" alt="{{ item.name }}">
+                    <div style="flex:1;">
+                        <div style="font-size:1.55rem; font-weight:600; color:var(--black);">{{ item.name }}</div>
+                        {% if item.size %}
+                            <div style="font-size:1.25rem; color:#0284c7; font-weight:600;">Size: {{ item.size }}</div>
+                        {% endif %}
+                        <div style="font-size:1.35rem; color:#64748b; margin-top:0.3rem;">
+                            Rs {{ item.price }} x {{ item.quantity }}
+                        </div>
+                    </div>
+                    <div style="font-size:1.55rem; font-weight:bold; color:var(--black);">
+                        Rs {{ item.subtotal }}/-
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="empty" style="margin:1rem 0;">Your cart is empty.</p>
+            {% endif %}
+        </div>
+
+        <div style="margin-top:2rem; padding-top:1.5rem; border-top:1px solid #f1f5f9; font-size:1.5rem;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:1rem; color:#64748b;">
+                <span>Subtotal</span>
+                <span>Rs {{ grand_total }}/-</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:1rem; color:#16a34a; font-weight:600;">
+                <span>Home Delivery</span>
+                <span>FREE</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:2rem; font-weight:700; color:var(--black); border-top:2px solid #e2e8f0; padding-top:1.2rem; margin-top:1rem;">
+                <span>Grand Total</span>
+                <span style="color:var(--primary);">Rs {{ grand_total }}/-</span>
+            </div>
+        </div>
+
+        <div style="margin-top:2rem; background:#f8fafc; padding:1.2rem; border-radius:8px; font-size:1.3rem; color:#64748b; display:flex; align-items:center; gap:10px;">
+            <i class="fas fa-shield-check" style="font-size:2rem; color:#10b981;"></i>
+            <span>All transactions are encrypted and secured with SSL.</span>
+        </div>
+    </div>
+
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Phone formatting
+const phoneInput = document.getElementById('number');
+if (phoneInput) {
+    phoneInput.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
+}
+
+// Khalti Payment Handler
+const khaltiBtn = document.getElementById('khalti-button');
+const checkoutForm = document.getElementById('checkout-form');
+
+if (khaltiBtn && checkoutForm) {
+    khaltiBtn.addEventListener('click', function() {
+        const name = document.getElementById('name').value.trim();
+        const number = document.getElementById('number').value.trim();
+        const email = document.getElementById('email').value.trim();
+
+        if (!name || !number || !email) {
+            alert('Please provide your name, phone number, and email.');
+            return;
+        }
+
+        if (number.length !== 10 || !/^\d{10}$/.test(number)) {
+            alert('Phone number must be exactly 10 digits.');
+            return;
+        }
+
+        khaltiBtn.disabled = true;
+        khaltiBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting to Khalti...';
+
+        const formData = new FormData(checkoutForm);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch("{% url 'orders:khalti_initiate' %}", {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            } else {
+                alert(data.message || 'Payment initiation failed.');
+                khaltiBtn.disabled = false;
+                khaltiBtn.innerHTML = '<i class="fas fa-wallet"></i> Pay with Khalti (Instant Verification)';
+            }
+        })
+        .catch(err => {
+            alert('Network communication error: ' + err);
+            khaltiBtn.disabled = false;
+            khaltiBtn.innerHTML = '<i class="fas fa-wallet"></i> Pay with Khalti (Instant Verification)';
+        });
+    });
+}
+</script>
+{% endblock %}

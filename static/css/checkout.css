@@ -1,0 +1,132 @@
+/* Checkout Page Styles */
+
+.display-order {
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 2rem;
+}
+
+.display-order h3 {
+    font-size: 2.2rem;
+    color: var(--black);
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.order-items {
+    margin-bottom: 2rem;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--light-gray);
+    gap: 2rem;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.item-image {
+    flex: 0 0 80px;
+}
+
+.item-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.item-image img:hover {
+    transform: scale(1.05);
+}
+
+.item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.item-name {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--black);
+}
+
+.item-size {
+    font-size: 1.4rem;
+    color: var(--gray);
+}
+
+.item-details {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.item-price, .item-quantity, .item-total {
+    font-size: 1.4rem;
+    color: var(--dark-gray);
+}
+
+.item-total {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.order-summary {
+    background-color: var(--light-bg);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    font-size: 1.6rem;
+    color: var(--dark-gray);
+}
+
+.grand-total {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--black);
+    border-top: 1px solid var(--light-gray);
+    padding-top: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.empty {
+    text-align: center;
+    font-size: 1.8rem;
+    color: var(--gray);
+    padding: 2rem;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .order-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .item-image {
+        flex: 0 0 100px;
+    }
+    
+    .item-details {
+        flex-wrap: wrap;
+    }
+}

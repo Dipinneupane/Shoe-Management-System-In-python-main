@@ -1,0 +1,308 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – Happy Fit Footwear</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f8fafc;
+        }
+
+        /* LEFT BRAND PANEL */
+        .auth-brand-panel {
+            background: linear-gradient(145deg, #0f172a 0%, #1e3a5f 60%, #1a56db 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 5rem 6rem;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+        }
+        .auth-brand-panel::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+            bottom: -150px;
+            right: -120px;
+        }
+        .auth-brand-panel::after {
+            content: '';
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            background: rgba(26,86,219,0.35);
+            border-radius: 50%;
+            top: -80px;
+            left: -60px;
+        }
+        .brand-logo {
+            font-size: 3.2rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 3.5rem;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.5px;
+        }
+        .brand-logo i { color: #60a5fa; }
+        .brand-tagline {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .brand-tagline span { color: #60a5fa; }
+        .brand-sub {
+            font-size: 1.6rem;
+            color: #94a3b8;
+            line-height: 1.7;
+            max-width: 380px;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 4rem;
+        }
+        .brand-features {
+            list-style: none;
+            position: relative;
+            z-index: 1;
+        }
+        .brand-features li {
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .brand-features li i { color: #34d399; font-size: 1.4rem; }
+
+        /* RIGHT FORM PANEL */
+        .auth-form-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5rem 5rem;
+            background: #ffffff;
+        }
+        .auth-form-box {
+            width: 100%;
+            max-width: 420px;
+        }
+        .auth-form-box h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.6rem;
+        }
+        .auth-form-box .auth-subtitle {
+            font-size: 1.5rem;
+            color: #64748b;
+            margin-bottom: 3.5rem;
+        }
+
+        .auth-field {
+            margin-bottom: 2rem;
+        }
+        .auth-field label {
+            display: block;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.6rem;
+            letter-spacing: 0.3px;
+        }
+        .auth-input-wrap {
+            position: relative;
+        }
+        .auth-input-wrap i {
+            position: absolute;
+            left: 1.6rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.5rem;
+        }
+        .auth-input-wrap input {
+            width: 100%;
+            padding: 1.4rem 1.4rem 1.4rem 4.5rem;
+            font-size: 1.5rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+            color: #0f172a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .auth-input-wrap input:focus {
+            border-color: #1a56db;
+            box-shadow: 0 0 0 3px rgba(26,86,219,0.12);
+            background: #fff;
+        }
+        .auth-input-wrap .toggle-pw {
+            position: absolute;
+            right: 1.6rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            left: auto;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 1.5rem;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(90deg, #1a56db, #1e40af);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: all 0.25s ease;
+            letter-spacing: 0.3px;
+        }
+        .auth-btn:hover {
+            background: linear-gradient(90deg, #1e40af, #1a56db);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26, 86, 219, 0.35);
+        }
+
+        .auth-divider {
+            text-align: center;
+            font-size: 1.35rem;
+            color: #94a3b8;
+            margin: 2.5rem 0 1.5rem;
+        }
+
+        .auth-link {
+            text-align: center;
+            font-size: 1.45rem;
+            color: #64748b;
+            margin-top: 2rem;
+        }
+        .auth-link a {
+            color: #1a56db;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .auth-link a:hover { text-decoration: underline; }
+
+        /* notification container */
+        .notification-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            body { grid-template-columns: 1fr; }
+            .auth-brand-panel { display: none; }
+            .auth-form-panel { padding: 4rem 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    {% if messages %}
+        <div class="notification-container">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    <span>{{ message }}</span>
+                    <i class="fas fa-times" onclick="this.parentElement.remove();"></i>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- LEFT: Brand Panel -->
+    <div class="auth-brand-panel">
+        <div class="brand-logo">
+            <i class="fas fa-shoe-prints"></i> Happy Fit
+        </div>
+        <h1 class="brand-tagline">Step Into <span>Comfort</span> &amp; Style</h1>
+        <p class="brand-sub">Nepal's premier destination for authentic, high-performance footwear delivered nationwide.</p>
+        <ul class="brand-features">
+            <li><i class="fas fa-check-circle"></i> 100% Genuine Guaranteed</li>
+            <li><i class="fas fa-check-circle"></i> AI-Powered Recommendations</li>
+            <li><i class="fas fa-check-circle"></i> Nepal-Wide Fast Dispatch</li>
+            <li><i class="fas fa-check-circle"></i> Khalti &amp; Cash on Delivery</li>
+        </ul>
+    </div>
+
+    <!-- RIGHT: Form Panel -->
+    <div class="auth-form-panel">
+        <div class="auth-form-box">
+            <h2>Welcome Back</h2>
+            <p class="auth-subtitle">Sign in to your Happy Fit account to continue shopping.</p>
+
+            <form action="{% url 'accounts:login' %}" method="post">
+                {% csrf_token %}
+
+                <div class="auth-field">
+                    <label for="email">Email Address</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="you@gmail.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="auth-field">
+                    <label for="password">Password</label>
+                    <div class="auth-input-wrap">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                        <i class="fas fa-eye toggle-pw" id="togglePw"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+
+            <p class="auth-link">Don't have an account? <a href="{% url 'accounts:register' %}">Create one free</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('togglePw').addEventListener('click', function() {
+            const pw = document.getElementById('password');
+            if (pw.type === 'password') {
+                pw.type = 'text';
+                this.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                pw.type = 'password';
+                this.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+    </script>
+
+</body>
+</html>

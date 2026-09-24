@@ -1,0 +1,74 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}Manage Reviews - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_reviews.css' %}">
+<style>
+.reviews-section .box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.reviews-section .box {
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="reviews-section" style="padding: 2rem;">
+    <h1 class="title">Product Reviews Moderation</h1>
+
+    <div class="box-container">
+        {% for review in reviews %}
+        <div class="box">
+            <div style="display:flex; gap:12px; align-items:center; margin-bottom:1rem;">
+                <img src="{{ MEDIA_URL }}{{ review.product.image }}" alt="{{ review.product.name }}" style="width:50px; height:50px; object-fit:cover; border-radius:6px;">
+                <div>
+                    <h4 style="font-size:1.6rem; color:var(--black);">{{ review.product.name }}</h4>
+                    <span style="font-size:1.2rem; color:#888;">{{ review.created_at|date:"M d, Y" }}</span>
+                </div>
+            </div>
+
+            <div style="color:#ffc107; font-size:1.5rem; margin-bottom:0.8rem;">
+                {% for _ in "x"|rjust:review.rating %}★{% endfor %}
+                <span style="font-size:1.3rem; color:#555; margin-left:0.5rem;">({{ review.rating }}/5)</span>
+            </div>
+
+            <p style="font-size:1.4rem; color:#444; line-height:1.6; margin-bottom:1rem; font-style:italic;">
+                "{{ review.review_text|default:'No comment provided.' }}"
+            </p>
+
+            <div style="font-size:1.3rem; color:#666; margin-bottom:1.5rem;">
+                Reviewer: <strong>{{ review.user.name|default:review.user.username }}</strong> ({{ review.user.email }})
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="padding:0.3rem 0.8rem; border-radius:4px; font-size:1.2rem; font-weight:bold; {% if review.status == 'approved' %}background:#dcfce7; color:#15803d;{% else %}background:#fef3c7; color:#b45309;{% endif %}">
+                    Status: {{ review.status|upper }}
+                </span>
+
+                <div>
+                    {% if review.status != 'approved' %}
+                        <a href="{% url 'store_admin:reviews' %}?approve={{ review.id }}" class="option-btn" style="padding:0.6rem 1.2rem; font-size:1.3rem; margin:0 5px 0 0;">Approve</a>
+                    {% endif %}
+                    <a href="{% url 'store_admin:reviews' %}?delete={{ review.id }}" onclick="return confirm('Delete this review?');" class="delete-btn" style="padding:0.6rem 1.2rem; font-size:1.3rem; margin:0;">Delete</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty">No customer reviews yet!</p>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}
