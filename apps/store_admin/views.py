@@ -1,17 +1,19 @@
 import os
-import re
 from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import get_user_model, logout
+from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib import messages
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Q
 from django.conf import settings
 from django.core.files.storage import default_storage
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
 from .decorators import admin_required
 from apps.store.models import Product, Review
 from apps.orders.models import Order, Message
 
 User = get_user_model()
+
 
 @admin_required
 def dashboard(request):
@@ -38,9 +40,9 @@ def dashboard(request):
     }
     return render(request, 'store_admin/dashboard.html', context)
 
+
 @admin_required
 def products_view(request):
-    # Handle Delete
     delete_id = request.GET.get('delete')
     if delete_id:
         prod = Product.objects.filter(id=delete_id).first()
@@ -56,12 +58,10 @@ def products_view(request):
             messages.success(request, 'Product deleted successfully!')
         return redirect('store_admin:products')
 
-    # Handle Edit / Update
     update_id = request.GET.get('update')
     update_product = Product.objects.filter(id=update_id).first() if update_id else None
 
     if request.method == 'POST':
-        # Updating an existing product
         if 'update_product' in request.POST:
             p_id = request.POST.get('update_p_id')
             prod = get_object_or_404(Product, id=p_id)
@@ -77,7 +77,6 @@ def products_view(request):
 
             new_image = request.FILES.get('update_image')
             if new_image:
-                # Remove old file if it exists
                 if prod.image:
                     old_path = os.path.join(settings.MEDIA_ROOT, prod.image)
                     if os.path.exists(old_path):
@@ -85,7 +84,6 @@ def products_view(request):
                             os.remove(old_path)
                         except Exception:
                             pass
-                # Save new file
                 filename = new_image.name
                 saved_name = default_storage.save(filename, new_image)
                 prod.image = os.path.basename(saved_name)
@@ -94,7 +92,6 @@ def products_view(request):
             messages.success(request, 'Product updated successfully!')
             return redirect('store_admin:products')
 
-        # Adding a new product
         elif 'add_product' in request.POST:
             name = request.POST.get('name', '').strip()
             price = request.POST.get('price', 0)
@@ -139,6 +136,7 @@ def products_view(request):
         'update_product': update_product,
     })
 
+
 @admin_required
 def orders_view(request):
     delete_id = request.GET.get('delete')
@@ -160,6 +158,7 @@ def orders_view(request):
     orders = Order.objects.all()
     return render(request, 'store_admin/orders.html', {'orders': orders})
 
+
 @admin_required
 def reviews_view(request):
     approve_id = request.GET.get('approve')
@@ -177,6 +176,7 @@ def reviews_view(request):
     reviews = Review.objects.select_related('product', 'user').all()
     return render(request, 'store_admin/reviews.html', {'reviews': reviews})
 
+
 @admin_required
 def users_view(request):
     delete_id = request.GET.get('delete')
@@ -184,7 +184,6 @@ def users_view(request):
         target_user = User.objects.filter(id=delete_id).first()
         if target_user:
             is_self = (target_user.id == request.user.id)
-            # Cascade delete user reviews
             Review.objects.filter(user=target_user).delete()
             target_user.delete()
 
@@ -199,6 +198,7 @@ def users_view(request):
     users_list = User.objects.all().order_by('-id')
     return render(request, 'store_admin/users.html', {'users_list': users_list})
 
+
 @admin_required
 def contacts_view(request):
     delete_id = request.GET.get('delete')
@@ -209,3 +209,37 @@ def contacts_view(request):
 
     all_messages = Message.objects.all()
     return render(request, 'store_admin/contacts.html', {'messages_list': all_messages})
+
+
+@never_cache
+@ensure_csrf_cookie
+def admin_login_view(request):
+    if request.user.is_authenticated and (request.user.user_type == 'admin' or request.user.is_staff or request.user.is_superuser):
+        return redirect('store_admin:dashboard')
+
+    if request.method == 'POST':
+        login_input = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
+
+        user_record = User.objects.filter(Q(email__iexact=login_input) | Q(username__iexact=login_input)).first()
+        username_to_auth = user_record.username if user_record else login_input
+
+        user = authenticate(request, username=username_to_auth, password=password)
+        if user is not None:
+            if user.user_type == 'admin' or user.is_staff or user.is_superuser:
+                login(request, user)
+                messages.success(request, f'Welcome to Admin Portal, {user.name or user.username}!')
+                return redirect('store_admin:dashboard')
+            else:
+                messages.error(request, 'Access denied: This login is strictly for administrators.')
+        else:
+            messages.error(request, 'Incorrect email or password!')
+
+    return render(request, 'store_admin/login.html')
+
+
+def admin_logout_view(request):
+    logout(request)
+    messages.success(request, 'Signed out of Admin Portal.')
+    return redirect('store_admin:admin_login')
+

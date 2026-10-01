@@ -60,21 +60,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4500 + (idx * 500));
     });
 
-    // 6. Scroll to top button
     const scrollTopBtn = document.querySelector('.scroll-top');
     if (scrollTopBtn) {
         window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                scrollTopBtn.classList.add('active');
-            } else {
-                scrollTopBtn.classList.remove('active');
-            }
+            scrollTopBtn.classList.toggle('active', window.pageYOffset > 300);
         });
-
         scrollTopBtn.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
+
 });
 
 // Quantity Steppers (Safe global functions)

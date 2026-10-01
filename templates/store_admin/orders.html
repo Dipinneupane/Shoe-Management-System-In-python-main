@@ -35,7 +35,7 @@
 {% block content %}
 
 <section class="orders">
-    <h1 class="title">Customer Orders Management</h1>
+    <h1 class="title">Orders Management</h1>
 
     <div class="box-container">
         {% for order in orders %}
@@ -45,9 +45,9 @@
                 <span style="font-size:1.3rem; color:#888;">{{ order.placed_on }}</span>
             </div>
             
-            <p>Customer Name : <span>{{ order.name }}</span></p>
+            <p>User Name : <span>{{ order.name }}</span></p>
             <p>Phone Number : <span>{{ order.number }}</span></p>
-            <p>Customer Email : <span>{{ order.email }}</span></p>
+            <p>User Email : <span>{{ order.email }}</span></p>
             <p>Payment Method : <span>{{ order.method|upper }}</span></p>
             <p>Total Price : <span style="color:var(--primary); font-size:1.7rem; font-weight:bold;">Rs {{ order.total_price }}/-</span></p>
 

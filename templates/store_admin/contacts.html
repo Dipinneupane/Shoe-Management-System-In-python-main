@@ -34,7 +34,7 @@
 {% block content %}
 
 <section class="messages-section" style="padding: 2rem;">
-    <h1 class="title">Customer Messages Inbox</h1>
+    <h1 class="title">User Messages Inbox</h1>
 
     <div class="box-container">
         {% for msg in messages_list %}
@@ -52,7 +52,7 @@
             </a>
         </div>
         {% empty %}
-        <p class="empty">No customer messages yet!</p>
+        <p class="empty">No user messages yet!</p>
         {% endfor %}
     </div>
 </section>

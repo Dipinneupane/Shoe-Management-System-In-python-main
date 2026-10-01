@@ -181,46 +181,6 @@
     padding-bottom: 2.5rem;
     line-height: 1.8;
 }
-/* Trust Features Bar */
-.trust-features {
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 2.5rem 2rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
-.trust-features .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 2rem;
-    align-items: center;
-}
-.trust-card {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-.trust-card i {
-    font-size: 3rem;
-    color: var(--primary);
-    background: #eff6ff;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-.trust-card h4 {
-    font-size: 1.55rem;
-    color: var(--black);
-    margin-bottom: 0.3rem;
-}
-.trust-card p {
-    font-size: 1.3rem;
-    color: #64748b;
-}
-
 /* Category Navigation Pills */
 .category-pills-section {
     padding: 3rem 2rem 1rem;
@@ -382,40 +342,6 @@
     </div>
 </section>
 
-<!-- 2. Trust Features Bar -->
-<div class="trust-features">
-    <div class="container">
-        <div class="trust-card">
-            <i class="fas fa-truck-fast"></i>
-            <div>
-                <h4>Fast Nepal Delivery</h4>
-                <p>Prompt door-to-door delivery</p>
-            </div>
-        </div>
-        <div class="trust-card">
-            <i class="fas fa-shield-alt"></i>
-            <div>
-                <h4>100% Genuine Shoes</h4>
-                <p>Authentic branded craftsmanship</p>
-            </div>
-        </div>
-        <div class="trust-card">
-            <i class="fas fa-wallet"></i>
-            <div>
-                <h4>Khalti & Cash on Delivery</h4>
-                <p>Flexible and secure payments</p>
-            </div>
-        </div>
-        <div class="trust-card">
-            <i class="fas fa-sync-alt"></i>
-            <div>
-                <h4>Size Fit Guarantee</h4>
-                <p>Hassle-free size assistance</p>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- 3. Quick Category Navigation Bar -->
 <section class="category-pills-section">
     <h2 style="font-size:2.2rem; color:var(--black); font-weight:600;">Browse by Footwear Type</h2>
@@ -430,7 +356,7 @@
     </div>
 </section>
 
-<!-- 4. Collaborative AI Recommendations ("Curated For You") -->
+<!-- 4. Curated Recommendations ("Curated For You") -->
 {% if collaborative_recs %}
 <section class="products">
     <div style="text-align:center; margin-bottom:2.5rem;">
@@ -502,21 +428,38 @@
         {% endfor %}
     </div>
 
-    <div style="text-align: center; margin-top: 3.5rem;">
-        <a href="{% url 'store:shop' %}" class="option-btn" style="padding:1.2rem 3rem; font-size:1.6rem;">
-            Explore Complete Catalog <i class="fas fa-arrow-right"></i>
-        </a>
-    </div>
 </section>
 
-<!-- 6. Footwear Size Advisor Prompt -->
-{% if recommended_size %}
-<section style="padding: 3rem 2rem; background: #e0f2fe; text-align: center; border-top: 1px solid #bae6fd; border-bottom: 1px solid #bae6fd;">
-    <div style="max-width: 800px; margin: 0 auto;">
-        <p style="font-size: 1.8rem; color: #0369a1; font-weight: 600;">
-            <i class="fas fa-ruler-combined"></i> Based on your profile measurements, your recommended shoe size is: 
-            <span style="background:#0284c7; color:#fff; padding:0.4rem 1.2rem; border-radius:6px; margin-left:0.5rem;">EU {{ recommended_size }}</span>
-        </p>
+{% if foot_size_recommendation %}
+<section class="products">
+    <div style="text-align:center; margin-bottom:2.5rem;">
+        <span style="background:#e7f4f1; color:#087f76; padding:0.5rem 1.4rem; border-radius:20px; font-size:1.3rem; font-weight:bold; text-transform:uppercase;">
+            <i class="fas fa-ruler-combined"></i> Matched to your foot size
+        </span>
+        <h1 class="title" style="margin-top:1rem;">Shoes Available In Your Foot Size</h1>
+    </div>
+
+    <div class="box-container">
+        {% for product in foot_size_recommendation.matching_products %}
+        <div class="box">
+            <div class="price">Rs {{ product.price }}/-</div>
+            <a href="{% url 'store:product_detail' product.id %}">
+                <img class="image" src="{{ MEDIA_URL }}{{ product.image }}" alt="{{ product.name }}">
+            </a>
+            <div class="box-body">
+                <div class="name">{{ product.name }}</div>
+                <div class="stars">
+                    <i class="fas fa-star"></i> {{ product.avg_rating }} ({{ product.rating_count }})
+                </div>
+                <div style="font-size:1.3rem; color:#64748b; margin-bottom:1.2rem;">
+                    Available sizes: {{ product.sizes }}
+                </div>
+                <a href="{% url 'store:product_detail' product.id %}" class="btn" style="background:var(--primary); color:#fff;">View Footwear</a>
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty" style="grid-column:1/-1;">No in-stock shoes are currently available in EU {{ foot_size_recommendation.primary_eu }}.</p>
+        {% endfor %}
     </div>
 </section>
 {% endif %}

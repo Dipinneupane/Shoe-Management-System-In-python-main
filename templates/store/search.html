@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Search Footwear - Happy Fit{% endblock %}
 
 {% block content %}
 
-<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+<div class="heading" style="background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
     <h3>Search Page</h3>
     <p><a href="{% url 'store:home' %}">Home</a> / Search</p>
 </div>
@@ -58,3 +58,4 @@
 </section>
 
 {% endblock %}
+

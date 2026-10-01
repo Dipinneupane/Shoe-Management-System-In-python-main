@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Foot Size – Happy Fit{% endblock %}
+
+{% block extra_css %}
+<style>
+.foot-size-page {
+    max-width: 680px;
+    margin: 4rem auto 7rem;
+    padding: 0 2rem;
+}
+.foot-size-back {
+    display: inline-flex;
+    align-items: center;
+    gap: .8rem;
+    margin-bottom: 1.8rem;
+    color: #52625f;
+    font-size: 1.35rem;
+}
+.foot-size-panel {
+    padding: 3rem;
+    border: 1px solid #dce5e3;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 14px 40px rgba(25, 50, 47, .07);
+}
+.foot-size-panel h1 {
+    margin-bottom: 2.4rem;
+    color: #20312e;
+    font-size: 2.4rem;
+}
+.foot-size-form .form-field { margin-bottom: 1.8rem; }
+.foot-size-form label {
+    display: block;
+    margin-bottom: .6rem;
+    color: #334155;
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+.foot-size-form input {
+    width: 100%;
+    padding: 1.1rem 1.4rem;
+    border: 1px solid #cbd7d4;
+    border-radius: 6px;
+    background: #fbfcfc;
+    font-size: 1.4rem;
+}
+.foot-size-form input:focus {
+    border-color: #087f76;
+    box-shadow: 0 0 0 3px rgba(8, 127, 118, .12);
+}
+.foot-size-help { display: block; margin-top: .6rem; color: #64748b; font-size: 1.2rem; }
+.foot-size-submit {
+    padding: 1.2rem 1.8rem;
+    border-radius: 6px;
+    color: #fff;
+    background: #193b38;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.foot-size-submit:hover { background: #087f76; }
+@media (max-width: 600px) {
+    .foot-size-page { margin-top: 2.4rem; padding: 0 1.4rem; }
+    .foot-size-panel { padding: 2.2rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="foot-size-page">
+    <a class="foot-size-back" href="{% url 'accounts:profile' %}">
+        <i class="fas fa-arrow-left"></i> Back to profile
+    </a>
+    <section class="foot-size-panel">
+        <h1>Add foot size</h1>
+        <form class="foot-size-form" action="{% url 'accounts:profile' %}" method="post">
+            {% csrf_token %}
+            <div class="form-field">
+                <label for="footLength">Foot length (cm)</label>
+                <input type="number" step="0.1" min="15" max="35" id="footLength" name="foot_length"
+                       value="{% if profile_user.foot_length_cm %}{{ profile_user.foot_length_cm }}{% endif %}" required>
+                <small class="foot-size-help">Measure heel-to-toe while standing flat.</small>
+            </div>
+            <div class="form-field">
+                <label for="manualSize">Preferred EU size (optional)</label>
+                <input type="text" id="manualSize" name="shoe_size_preference"
+                       value="{{ profile_user.shoe_size_preference }}" placeholder="e.g. 42">
+            </div>
+            <button class="foot-size-submit" type="submit">Save foot size</button>
+        </form>
+    </section>
+</main>
+{% endblock %}

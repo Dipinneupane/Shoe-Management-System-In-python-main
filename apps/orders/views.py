@@ -54,7 +54,6 @@ def checkout_view(request):
 
             try:
                 with transaction.atomic():
-                    # Check stock and update
                     for item in cart_items:
                         prod = Product.objects.select_for_update().filter(name=item.name).first()
                         if not prod:
@@ -64,7 +63,6 @@ def checkout_view(request):
                         prod.quantity -= item.quantity
                         prod.save()
 
-                    # Create order
                     Order.objects.create(
                         user=request.user,
                         name=name,
@@ -78,7 +76,6 @@ def checkout_view(request):
                         payment_status='pending'
                     )
 
-                    # Clear cart
                     cart_items.delete()
                     is_success = True
                     messages.success(request, 'Order placed successfully!')

@@ -3,18 +3,19 @@ import re
 from django.db import models
 from django.conf import settings
 
+
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
     name = models.CharField(max_length=100)
     number = models.CharField(max_length=12)
     email = models.EmailField()
-    method = models.CharField(max_length=50)  # 'cod' or 'khalti'
+    method = models.CharField(max_length=50)
     address = models.CharField(max_length=500, blank=True, default='')
-    total_products = models.TextField()  # "Product A (1), Product B (2)"
-    sizes = models.TextField(blank=True, default='{}')  # JSON: {"Product A": "42"}
+    total_products = models.TextField()
+    sizes = models.TextField(blank=True, default='{}')
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     placed_on = models.CharField(max_length=50)
-    payment_status = models.CharField(max_length=20, default='pending')  # 'pending', 'completed'
+    payment_status = models.CharField(max_length=20, default='pending')
 
     class Meta:
         ordering = ['-id']
@@ -24,9 +25,6 @@ class Order(models.Model):
 
     @property
     def parsed_items(self):
-        """
-        Parses total_products string and sizes JSON into structured items list.
-        """
         from apps.store.models import Product
         items = []
         sizes_dict = {}
@@ -61,6 +59,7 @@ class Order(models.Model):
                     'subtotal': (float(prod.price) * p_qty) if prod else 0,
                 })
         return items
+
 
 class Message(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='messages')

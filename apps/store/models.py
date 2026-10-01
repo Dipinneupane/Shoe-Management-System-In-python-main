@@ -1,17 +1,18 @@
 from django.db import models
 from django.conf import settings
-from django.db.models import Avg, Count
+from django.db.models import Avg
+
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity = models.IntegerField(default=0)  # Stock quantity
+    quantity = models.IntegerField(default=0)
     description = models.TextField(blank=True, default='')
     category = models.CharField(max_length=50, blank=True, default='')
     brand = models.CharField(max_length=50, blank=True, default='')
     type = models.CharField(max_length=50, blank=True, default='')
-    sizes = models.CharField(max_length=200, blank=True, default='')  # Comma-separated sizes e.g. "38, 39, 40"
-    image = models.CharField(max_length=255)  # Filename in uploaded_img
+    sizes = models.CharField(max_length=200, blank=True, default='')
+    image = models.CharField(max_length=255)
 
     class Meta:
         ordering = ['-id']
@@ -45,6 +46,7 @@ class Product(models.Model):
     @property
     def is_in_stock(self):
         return self.quantity > 0
+
 
 class Review(models.Model):
     STATUS_CHOICES = (

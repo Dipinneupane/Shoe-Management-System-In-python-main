@@ -96,7 +96,7 @@
 {% block content %}
 
 <!-- Breadcrumb Header -->
-<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+<div class="heading" style="background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
     <h3>{{ product.name }}</h3>
     <p>
         <a href="{% url 'store:home' %}">Home</a> / 
@@ -202,9 +202,15 @@
             <input type="hidden" name="product_image" value="{{ product.image }}">
             
             {% if product.is_in_stock %}
-                <button type="submit" class="btn" style="width:100%; padding:1.4rem; font-size:1.65rem; background:#10b981; font-weight:bold; display:flex; justify-content:center; align-items:center; gap:1rem;">
-                    <i class="fas fa-cart-plus"></i> Add to Shopping Cart
-                </button>
+                {% if user.is_authenticated %}
+                    <button type="submit" class="btn" style="width:100%; padding:1.4rem; font-size:1.65rem; background:#10b981; font-weight:bold; display:flex; justify-content:center; align-items:center; gap:1rem;">
+                        <i class="fas fa-cart-plus"></i> Add to Shopping Cart
+                    </button>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn" style="width:100%; padding:1.4rem; font-size:1.65rem; background:var(--primary); font-weight:bold; display:flex; justify-content:center; align-items:center; gap:1rem; text-decoration:none; color:#fff;">
+                        <i class="fas fa-sign-in-alt"></i> Log in to Purchase
+                    </a>
+                {% endif %}
             {% else %}
                 <button type="button" class="btn" style="width:100%; padding:1.4rem; font-size:1.65rem; background:#94a3b8; cursor:not-allowed;" disabled>
                     Out of Stock

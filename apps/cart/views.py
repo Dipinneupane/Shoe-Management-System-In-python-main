@@ -8,7 +8,6 @@ from apps.store.models import Product
 def view_cart(request):
     raw_items = Cart.objects.filter(user=request.user)
     
-    # In-memory grouping matching PHP's cart.php algorithm
     grouped = {}
     grand_total = 0
     
@@ -46,8 +45,11 @@ def view_cart(request):
         'grand_total': round(grand_total, 2),
     })
 
-@login_required
 def add_to_cart(request, product_id):
+    if not request.user.is_authenticated:
+        messages.info(request, 'Please log in to add items to your cart and complete your purchase.')
+        return redirect('accounts:login')
+
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':
         product_name = request.POST.get('product_name', product.name)
@@ -94,7 +96,6 @@ def update_cart(request):
                 item.quantity = max(1, qty)
                 item.save()
 
-                # Clean up any duplicate grouped records
                 if len(cart_ids) > 1:
                     Cart.objects.filter(id__in=cart_ids[1:], user=request.user).delete()
 

@@ -6,15 +6,21 @@ from .models import Product, Review
 from apps.cart.models import Cart
 from apps.orders.models import Message, Order
 from .recommendations import (
+    get_iso_size_recommendation_knn,
     get_content_based_recommendations,
     get_collaborative_recommendations,
     get_purchase_based_recommendations,
-    get_size_recommendation,
+    infer_user_size_profile_from_purchases,
+    get_hybrid_recommendations,
 )
 
-@login_required
+
 def home(request):
     if request.method == 'POST' and 'add_to_cart' in request.POST:
+        if not request.user.is_authenticated:
+            messages.info(request, 'Please log in to add items to your cart and purchase footwear.')
+            return redirect('accounts:login')
+
         product_name = request.POST.get('product_name')
         product_price = request.POST.get('product_price')
         product_image = request.POST.get('product_image')
@@ -34,30 +40,36 @@ def home(request):
             messages.success(request, 'Product added to cart!')
         return redirect('store:home')
 
-    # Collaborative Recommendations
-    collaborative_recs = get_collaborative_recommendations(request.user.id, 8)
+    user_id = request.user.id if request.user.is_authenticated else None
 
-    # Latest Products with Ratings
+    collaborative_recs = get_collaborative_recommendations(user_id, 8) if user_id else list(
+        Product.objects.annotate(
+            avg_rtg=Avg('reviews__rating'),
+            rtg_cnt=Count('reviews__id')
+        ).filter(quantity__gt=0).order_by('-avg_rtg', '-rtg_cnt', '-id')[:8]
+    )
+
     latest_products = Product.objects.annotate(
         avg_rtg=Avg('reviews__rating'),
         rtg_cnt=Count('reviews__id')
     ).order_by('-avg_rtg', '-rtg_cnt', '-id')[:6]
 
-    # Purchase-Based Recommendations
-    purchase_recs = get_purchase_based_recommendations(request.user.id, 8)
+    purchase_recs = get_purchase_based_recommendations(user_id, 8) if user_id else []
 
-    # Most Reviewed Products
     most_reviewed = Product.objects.annotate(
         review_count=Count('reviews__id'),
         avg_rtg=Avg('reviews__rating')
     ).filter(review_count__gt=0).order_by('-review_count', '-avg_rtg')[:4]
 
-    # Testimonials Slider (approved reviews with rating >= 4)
     testimonials = Review.objects.filter(status='approved', rating__gte=4).select_related('user', 'product')[:5]
 
-    # Foot Length Advisor
-    foot_length = request.session.get('foot_length')
-    recommended_size = get_size_recommendation(foot_length) if foot_length else None
+    foot_size_recommendation = None
+    if user_id and request.user.foot_length_cm:
+        foot_size_recommendation = get_iso_size_recommendation_knn(
+            request.user.foot_length_cm,
+            unit='cm',
+            fit_preference=request.user.fit_preference or 'standard',
+        )
 
     context = {
         'collaborative_recs': collaborative_recs,
@@ -65,16 +77,16 @@ def home(request):
         'purchase_recs': purchase_recs,
         'most_reviewed_products': most_reviewed,
         'testimonials': testimonials,
-        'recommended_size': recommended_size,
+        'foot_size_recommendation': foot_size_recommendation,
     }
     return render(request, 'store/home.html', context)
 
-@login_required
+
 def about(request):
     testimonials = Review.objects.filter(status='approved').select_related('user', 'product')[:5]
     return render(request, 'store/about.html', {'testimonials': testimonials})
 
-@login_required
+
 def contact(request):
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
@@ -85,6 +97,10 @@ def contact(request):
         if len(number) != 10 or not number.isdigit():
             messages.error(request, 'Phone number must be exactly 10 digits!')
             return redirect('store:contact')
+
+        if not request.user.is_authenticated:
+            messages.info(request, 'Please log in to send a customer inquiry message.')
+            return redirect('accounts:login')
 
         if Message.objects.filter(name=name, email=email, number=number, message=msg_text).exists():
             messages.warning(request, 'Message already sent!')
@@ -101,11 +117,15 @@ def contact(request):
 
     return render(request, 'store/contact.html')
 
-@login_required
+
 def search_page(request):
     query = request.GET.get('search', request.POST.get('search', '')).strip()
 
     if request.method == 'POST' and 'add_to_cart' in request.POST:
+        if not request.user.is_authenticated:
+            messages.info(request, 'Please log in to add items to your cart and make a purchase.')
+            return redirect('accounts:login')
+
         product_name = request.POST.get('product_name')
         product_price = request.POST.get('product_price')
         product_image = request.POST.get('product_image')
@@ -135,9 +155,13 @@ def search_page(request):
 
     return render(request, 'store/search.html', {'products': products, 'search_query': query})
 
-@login_required
+
 def shop(request):
     if request.method == 'POST' and 'add_to_cart' in request.POST:
+        if not request.user.is_authenticated:
+            messages.info(request, 'Please log in to add items to your cart and make a purchase.')
+            return redirect('accounts:login')
+
         product_name = request.POST.get('product_name')
         product_price = request.POST.get('product_price')
         product_image = request.POST.get('product_image')
@@ -180,23 +204,41 @@ def shop(request):
         'type_filter': type_filter
     })
 
-@login_required
+
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = product.reviews.filter(status='approved').select_related('user')
     recommendations = get_content_based_recommendations(product.id, 8)
 
-    user_review = product.reviews.filter(user=request.user).first()
-    has_purchased = Order.objects.filter(user=request.user, total_products__icontains=product.name).exists()
+    user_id = request.user.id if request.user.is_authenticated else None
+    hybrid_recs = get_hybrid_recommendations(user_id, product_id=product.id, limit=4) if user_id else recommendations[:4]
+
+    user_review = None
+    has_purchased = False
+    if request.user.is_authenticated:
+        user_review = product.reviews.filter(user=request.user).first()
+        has_purchased = Order.objects.filter(user=request.user, total_products__icontains=product.name).exists()
+
+    user_size_profile = infer_user_size_profile_from_purchases(user_id) if user_id else None
+    recommended_size = user_size_profile.get('primary_eu') if user_size_profile else None
+    is_size_available = False
+
+    if recommended_size:
+        is_size_available = str(recommended_size) in product.parsed_sizes
 
     context = {
         'product': product,
         'reviews': reviews,
         'recommendations': recommendations,
+        'hybrid_recs': hybrid_recs,
         'user_review': user_review,
         'has_purchased': has_purchased,
+        'user_size_profile': user_size_profile,
+        'recommended_size': recommended_size,
+        'is_size_available': is_size_available,
     }
     return render(request, 'store/product.html', context)
+
 
 @login_required
 def submit_review(request, product_id):
@@ -205,7 +247,7 @@ def submit_review(request, product_id):
         rating = int(request.POST.get('rating', 5))
         review_text = request.POST.get('review_text', '').strip()
 
-        review_obj, created = Review.objects.update_or_create(
+        _, created = Review.objects.update_or_create(
             product=product,
             user=request.user,
             defaults={

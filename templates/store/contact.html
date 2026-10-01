@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Contact Us - Happy Fit{% endblock %}
 
 {% block content %}
 
-<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+<div class="heading" style="background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
     <h3>Contact Us</h3>
     <p><a href="{% url 'store:home' %}">Home</a> / Contact</p>
 </div>
@@ -40,3 +40,4 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 });
 </script>
 {% endblock %}
+

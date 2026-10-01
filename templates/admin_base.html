@@ -348,14 +348,11 @@
                 <i class="fas fa-envelope"></i> Messages
             </a>
 
-            <div class="adm-sb-divider"></div>
-            <a href="{% url 'store:home' %}" target="_blank">
-                <i class="fas fa-external-link-alt"></i> View Store
-            </a>
+
         </nav>
 
         <div class="adm-sb-foot">
-            <a href="{% url 'accounts:logout' %}">
+            <a href="{% url 'store_admin:admin_logout' %}">
                 <i class="fas fa-sign-out-alt"></i> Sign Out
             </a>
         </div>
@@ -371,10 +368,6 @@
             </div>
         </div>
         <div class="adm-tb-right">
-            <a href="{% url 'store:home' %}" target="_blank" class="adm-tb-link">
-                <i class="fas fa-store"></i> View Store
-            </a>
-            <span class="adm-tb-sep">|</span>
             <div class="adm-tb-user" id="admTbUser">
                 <div class="adm-tb-avatar">{{ user.name|default:user.username|first|upper }}</div>
                 <span class="adm-tb-username">{{ user.name|default:user.username }}</span>
@@ -382,8 +375,7 @@
 
                 <div class="adm-tb-drop" id="admTbDrop">
                     <a href="{% url 'store_admin:dashboard' %}">Dashboard</a>
-                    <a href="{% url 'store:home' %}" target="_blank">View Storefront</a>
-                    <a href="{% url 'accounts:logout' %}" class="adm-tb-drop-out">Sign Out</a>
+                    <a href="{% url 'store_admin:admin_logout' %}" class="adm-tb-drop-out">Sign Out</a>
                 </div>
             </div>
         </div>
@@ -399,7 +391,6 @@
         <footer class="adm-footer">
             <span>&copy; {% now "Y" %} Happy Fit Footwear. All rights reserved.</span>
             <div class="adm-footer-links">
-                <a href="{% url 'store:home' %}" target="_blank">View Store</a>
                 <a href="{% url 'store_admin:dashboard' %}">Dashboard</a>
                 <span style="color:#ddd;">Kathmandu, Nepal</span>
             </div>

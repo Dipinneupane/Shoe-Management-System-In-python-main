@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}My Order History - Happy Fit{% endblock %}
@@ -121,7 +121,7 @@
 
 {% block content %}
 
-<div class="heading" style="background: url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
+<div class="heading" style="background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('{% static 'images/heading-bg.webp' %}') no-repeat; background-size: cover; background-position: center;">
     <h3>My Orders</h3>
     <p><a href="{% url 'store:home' %}">Home</a> / Orders</p>
 </div>
@@ -295,3 +295,4 @@ window.onclick = function(e) {
 };
 </script>
 {% endblock %}
+
